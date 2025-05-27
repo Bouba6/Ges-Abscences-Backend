@@ -10,4 +10,5 @@ import com.gesabsences.gesabsences.data.Entities.Eleve;
 @RequestMapping("api/v1/eleves")
 public interface EleveController extends Controller<Eleve> {
 
+    
 }

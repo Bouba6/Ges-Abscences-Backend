@@ -10,7 +10,7 @@ public class CoursResponse {
 
     private String id;
     private String nomCours;
-    private Long idClasse;
+    private String idClasse;
     private String nomClasse;
     private String nomProfesseur;
     private String nomModule;
