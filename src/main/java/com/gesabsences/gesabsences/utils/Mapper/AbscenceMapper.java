@@ -7,7 +7,6 @@ import com.gesabsences.gesabsences.Web.Dto.Response.AbsenceResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-
 @Mapper(componentModel = "spring")
 public interface AbscenceMapper {
 

@@ -7,9 +7,13 @@ import com.gesabsences.gesabsences.data.Enum.StatutAbscence;
 import com.gesabsences.gesabsences.data.Enum.TypeAbscence;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
-@Document("absence")
+@Getter
+@Setter
+@Document("abscence")
 public class Abscence extends AbstractType {
 
     private String justificatif;

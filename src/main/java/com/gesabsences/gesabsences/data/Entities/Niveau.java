@@ -9,16 +9,17 @@ import org.springframework.stereotype.Component;
 import com.gesabsences.gesabsences.data.Enum.NiveauState;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Getter
+@Setter
 @Data
 @Document("niveau")
 public class Niveau extends AbstractType {
-    
-   
+
     @DBRef
     private List<Classe> classes;
 
-    
     private NiveauState niveauState;
 }
