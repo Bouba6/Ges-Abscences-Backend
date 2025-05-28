@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Data
 
-// @Document(collection = "users")
+@Document(collection = "users")
 public class User extends Personne {
 
     private String password;

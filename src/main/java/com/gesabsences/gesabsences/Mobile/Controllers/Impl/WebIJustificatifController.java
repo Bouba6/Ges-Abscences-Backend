@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.Web.Controllers.Impl;
+package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.util.Map;
 
@@ -11,21 +11,22 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesabsences.gesabsences.Web.Controllers.JustificatifController;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.justificatifResponse;
+import com.gesabsences.gesabsences.Mobile.Controllers.JustificatifController;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.justificatifResponse;
+import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Entities.Justitfication;
 import com.gesabsences.gesabsences.data.Services.JustificatifService;
-import com.gesabsences.gesabsences.Web.Mapper.JusticatifMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobJusticatifMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class IJustificatifController implements JustificatifController {
+public class WebIJustificatifController implements JustificatifController {
     private final JustificatifService justificatifService;
-    private final JusticatifMapper justificatifMapper;
+    private final MobJusticatifMapper justificatifMapper;
 
     /************* ✨ Windsurf Command ⭐ *************/
     /**

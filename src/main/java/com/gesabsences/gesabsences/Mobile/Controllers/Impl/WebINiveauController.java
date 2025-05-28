@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.Web.Controllers.Impl;
+package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.util.Map;
 
@@ -11,22 +11,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesabsences.gesabsences.Web.Controllers.NiveauController;
-import com.gesabsences.gesabsences.Web.Dto.Response.NiveauResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
+import com.gesabsences.gesabsences.Mobile.Controllers.NiveauController;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.NiveauResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Niveau;
 import com.gesabsences.gesabsences.data.Services.NiveauService;
-import com.gesabsences.gesabsences.Web.Mapper.NiveauMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobNiveauMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 
-public class INiveauController implements NiveauController {
+public class WebINiveauController implements NiveauController {
 
     private final NiveauService niveauService;
-    private final NiveauMapper niveauMapper;
+    private final MobNiveauMapper niveauMapper;
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll(@RequestParam(defaultValue = "0") int page,

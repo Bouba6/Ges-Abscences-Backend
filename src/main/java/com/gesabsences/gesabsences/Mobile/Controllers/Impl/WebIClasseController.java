@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.Web.Controllers.Impl;
+package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesabsences.gesabsences.Web.Controllers.ClasseController;
-import com.gesabsences.gesabsences.Web.Dto.Response.ClasseDetailResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.ClasseResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.EleveResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
+import com.gesabsences.gesabsences.Mobile.Controllers.ClasseController;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ClasseDetailResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ClasseResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.EleveResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Classe;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
@@ -25,20 +25,20 @@ import com.gesabsences.gesabsences.data.Services.ClasseService;
 import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.data.Services.ProfesseurClasseService;
 import com.gesabsences.gesabsences.data.Services.ProfesseurService;
-import com.gesabsences.gesabsences.Web.Mapper.ClasseMapper;
-import com.gesabsences.gesabsences.Web.Mapper.EleveMapper;
 
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobClasseMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobEleveMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class IClasseController implements ClasseController {
+public class WebIClasseController implements ClasseController {
 
     private final ClasseService classeService;
-    private final ClasseMapper classeMapper;
-    private final EleveMapper eleveMapper;
+    private final MobClasseMapper classeMapper;
+    private final MobEleveMapper eleveMapper;
     private final EleveService eleveService;
     private final ProfesseurService professeurService;
     private final ProfesseurClasseService professeurClasseService;
@@ -133,8 +133,10 @@ public class IClasseController implements ClasseController {
 
     @Override
     public ResponseEntity<?> findByNomClasse(String nomClasse, int page, int size) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findByNomClasse'");
+        Pageable pageable = PageRequest.of(page, size);
+        Classe classe = classeService.findByNomClasse(nomClasse);
+        ClasseResponse classeResponse = classeMapper.toDto(classe);
+        return ResponseEntity.ok(RestResponse.response(HttpStatus.OK, classeResponse, "Classe"));
     }
 
 }

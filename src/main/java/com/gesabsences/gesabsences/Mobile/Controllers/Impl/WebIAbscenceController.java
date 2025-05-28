@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.Web.Controllers.Impl;
+package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,28 +10,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesabsences.gesabsences.Web.Controllers.AbscenceContoller;
-import com.gesabsences.gesabsences.Web.Dto.Request.AbscenceRequest;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
+import com.gesabsences.gesabsences.Mobile.Controllers.AbscenceContoller;
+import com.gesabsences.gesabsences.Mobile.Controllers.AbscenceContoller;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobAbscenceMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobAbscenceMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Request.AbscenceRequest;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Services.AbscenceService;
 import com.gesabsences.gesabsences.data.Services.CoursService;
 import com.gesabsences.gesabsences.data.Services.EleveService;
-import com.gesabsences.gesabsences.Web.Mapper.AbscenceMapper;
 
 import lombok.RequiredArgsConstructor;
+
+
+
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class IAbscenceController implements AbscenceContoller {
+public class WebIAbscenceController implements AbscenceContoller {
 
     private final AbscenceService abscenceService;
     private final CoursService coursService;
     private final EleveService eleveService;
-    private final AbscenceMapper abscenceMapper;
+    private final MobAbscenceMapper abscenceMapper;
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll(int page, int size) {
@@ -107,5 +112,8 @@ public class IAbscenceController implements AbscenceContoller {
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, abscenceMapper.toDto(abscence1), "Abscence"),
                 HttpStatus.OK);
     }
+
+   
+
 
 }

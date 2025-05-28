@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.Web.Controllers.Impl;
+package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.util.List;
 import java.util.Map;
@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesabsences.gesabsences.Web.Controllers.ProfesseurController;
-import com.gesabsences.gesabsences.Web.Dto.Response.ProfesseurResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
+import com.gesabsences.gesabsences.Mobile.Controllers.ProfesseurController;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ProfesseurResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
 import com.gesabsences.gesabsences.data.Services.ProfesseurService;
-import com.gesabsences.gesabsences.Web.Mapper.ProfesseurMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobProfesseurMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class IProfesseurController implements ProfesseurController {
+public class WebIProfesseurController implements ProfesseurController {
 
     private final ProfesseurService professeurService;
-    private final ProfesseurMapper professeurMapper;
+    private final MobProfesseurMapper professeurMapper;
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll(

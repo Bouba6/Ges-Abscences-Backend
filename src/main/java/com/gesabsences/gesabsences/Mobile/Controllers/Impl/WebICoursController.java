@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.Web.Controllers.Impl;
+package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -11,25 +11,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesabsences.gesabsences.Web.Controllers.CoursController;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
+import com.gesabsences.gesabsences.Mobile.Controllers.CoursController;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Cours;
+import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
 import com.gesabsences.gesabsences.data.Services.ClasseService;
 import com.gesabsences.gesabsences.data.Services.CoursService;
+import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.data.Services.ProfesseurService;
-import com.gesabsences.gesabsences.Web.Mapper.CoursMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobCoursMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-public class ICoursController implements CoursController {
+public class WebICoursController implements CoursController {
 
     private final CoursService coursService;
     private final ClasseService classeService;
-    private final CoursMapper coursMapper;
+    private final EleveService eleveService;
+    private final MobCoursMapper coursMapper;
     private final ProfesseurService professeurService;
 
     @Override
@@ -89,6 +92,17 @@ public class ICoursController implements CoursController {
                 LocalDate.parse(endDate));
         var response = cours.stream().map(coursMapper::toDto).toList();
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, response, "Cours"), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findCoursForEleve(String id) {
+        Eleve eleve = eleveService.findById(id);
+        // List<Cours> cours = coursService.findCoursForEleve(eleve);
+        // var response = cours.stream().map(coursMapper::toDto).toList();
+
+        List<Cours> cours = coursService.findCoursForEleve(eleve);
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, cours, "Cours"), HttpStatus.OK);
+
     }
 
 }
