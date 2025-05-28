@@ -74,7 +74,35 @@ public class ClasseMock implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        clearDatabase();
+        // clearDatabase();
+        System.out.println("=== DÉBUT DE LA GÉNÉRATION DES DONNÉES ===");
+
+        // Vérifier si des données existent déjà
+        if (absenceRepository.count() > 0) {
+            System.out.println("⚠️ Données déjà existantes, génération annulée");
+            return;
+        }
+
+        try {
+            // Récupérer les modules existants
+            List<Module> modules = moduleRepository.findAll();
+            if (modules.isEmpty()) {
+                System.err.println("❌ ERREUR: Aucun module trouvé. Veuillez d'abord créer les modules.");
+                return;
+            }
+            System.out.println("✅ Modules disponibles : " + modules.size());
+
+            // Générer les données
+            generateMockData(modules);
+
+            // Afficher les résultats
+            printFinalResults();
+
+        } catch (Exception e) {
+            System.err.println("❌ ERREUR CRITIQUE dans la génération : " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     private void clearDatabase() {
