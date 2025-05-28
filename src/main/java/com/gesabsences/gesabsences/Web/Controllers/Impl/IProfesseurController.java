@@ -53,6 +53,7 @@ public class IProfesseurController implements ProfesseurController {
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectdById(String id) {
+        
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,
                 professeurMapper.toDto(professeurService.findById(id)), "Professeur"), HttpStatus.OK);
     }

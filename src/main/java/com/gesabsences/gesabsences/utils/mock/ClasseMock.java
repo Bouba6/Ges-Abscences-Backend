@@ -3,9 +3,11 @@ package com.gesabsences.gesabsences.utils.mock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +25,7 @@ import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Classe;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
+import com.gesabsences.gesabsences.data.Entities.Justitfication;
 import com.gesabsences.gesabsences.data.Entities.Niveau;
 import com.gesabsences.gesabsences.data.Entities.Module;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
@@ -29,11 +33,13 @@ import com.gesabsences.gesabsences.data.Entities.ProfesseurClasse;
 import com.gesabsences.gesabsences.data.Entities.ProfesseurModule;
 import com.gesabsences.gesabsences.data.Enum.NiveauState;
 import com.gesabsences.gesabsences.data.Enum.StatutAbscence;
+import com.gesabsences.gesabsences.data.Enum.StatutJustification;
 import com.gesabsences.gesabsences.data.Enum.TypeAbscence;
 import com.gesabsences.gesabsences.data.Repositories.AbscenceRepository;
 import com.gesabsences.gesabsences.data.Repositories.ClasseRepository;
 import com.gesabsences.gesabsences.data.Repositories.CoursRepository;
 import com.gesabsences.gesabsences.data.Repositories.EleveRepository;
+import com.gesabsences.gesabsences.data.Repositories.JustificatifRepository;
 import com.gesabsences.gesabsences.data.Repositories.ModuleRepository;
 import com.gesabsences.gesabsences.data.Repositories.NiveauRepository;
 import com.gesabsences.gesabsences.data.Repositories.ProfesseurClasseRepository;
@@ -54,6 +60,7 @@ public class ClasseMock implements CommandLineRunner {
     private final EleveRepository eleveRepository;
     private final CoursRepository coursRepository;
     private final AbscenceRepository absenceRepository;
+    private final JustificatifRepository justificatifRepository;
 
     // Predefined data to ensure more structured generation
     private static final List<String> FIRST_NAMES = Arrays.asList(
@@ -64,32 +71,32 @@ public class ClasseMock implements CommandLineRunner {
             "Diop", "Ndiaye", "Ba", "Fall", "Sow", "Gueye", "Faye", "Camara", "Sarr",
             "Diallo", "Sy", "Ndoye");
 
-    private static final List<String> MODULE_NAMES = Arrays.asList(
-            "Mathématiques", "Français", "Anglais", "Histoire-Géographie",
-            "Sciences Physiques", "SVT", "Éducation Civique");
-
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
+        // clearDatabase();
         System.out.println("=== DÉBUT DE LA GÉNÉRATION DES DONNÉES ===");
 
+        // Vérifier si des données existent déjà
+        if (absenceRepository.count() > 0) {
+            System.out.println("⚠️ Données déjà existantes, génération annulée");
+            return;
+        }
+
         try {
-            // Clear existing data
-            cleanupExistingData();
-            System.out.println("✅ Nettoyage des données terminé");
+            // Récupérer les modules existants
+            List<Module> modules = moduleRepository.findAll();
+            if (modules.isEmpty()) {
+                System.err.println("❌ ERREUR: Aucun module trouvé. Veuillez d'abord créer les modules.");
+                return;
+            }
+            System.out.println("✅ Modules disponibles : " + modules.size());
 
-            // Ensure modules exist
-            List<Module> modules = ensureModulesExist();
-            System.out.println("✅ Modules créés : " + modules.size());
-
-            // Generate mock data
+            // Générer les données
             generateMockData(modules);
 
-            System.out.println("=== RÉSULTATS FINAUX ===");
-            System.out.println("Nombre de cours créés : " + coursRepository.count());
-            System.out.println("Nombre d'absences créées : " + absenceRepository.count());
-            System.out.println("Nombre de professeurs : " + professeurRepository.count());
-            System.out.println("Nombre de classes : " + classeRepository.count());
-            System.out.println("Nombre d'élèves : " + eleveRepository.count());
+            // Afficher les résultats
+            printFinalResults();
 
         } catch (Exception e) {
             System.err.println("❌ ERREUR CRITIQUE dans la génération : " + e.getMessage());
@@ -98,404 +105,525 @@ public class ClasseMock implements CommandLineRunner {
         }
     }
 
-    private void cleanupExistingData() {
-        System.out.println("🧹 Nettoyage des données existantes...");
-        try {
-            absenceRepository.deleteAll();
-            System.out.println("  - Absences supprimées");
+    private void clearDatabase() {
+        System.out.println("🧹 Nettoyage de la base de données...");
 
-            coursRepository.deleteAll();
-            System.out.println("  - Cours supprimés");
+        justificatifRepository.deleteAll();
+        absenceRepository.deleteAll();
+        coursRepository.deleteAll();
+        professeurClasseRepository.deleteAll();
+        professeurModuleRepository.deleteAll();
+        professeurRepository.deleteAll();
+        eleveRepository.deleteAll();
+        classeRepository.deleteAll();
+        niveauRepository.deleteAll();
 
-            eleveRepository.deleteAll();
-            System.out.println("  - Élèves supprimés");
-
-            professeurClasseRepository.deleteAll();
-            System.out.println("  - Relations ProfesseurClasse supprimées");
-
-            professeurModuleRepository.deleteAll();
-            System.out.println("  - Relations ProfesseurModule supprimées");
-
-            classeRepository.deleteAll();
-            System.out.println("  - Classes supprimées");
-
-            niveauRepository.deleteAll();
-            System.out.println("  - Niveaux supprimés");
-
-            professeurRepository.deleteAll();
-            System.out.println("  - Professeurs supprimés");
-
-        } catch (Exception e) {
-            System.err.println("❌ Erreur lors du nettoyage : " + e.getMessage());
-            throw e;
-        }
+        System.out.println("✅ Base de données vidée avec succès");
     }
 
-    private List<Module> ensureModulesExist() {
-        System.out.println("📚 Vérification/création des modules...");
-        List<Module> existingModules = moduleRepository.findAll();
-        if (existingModules.isEmpty()) {
-            List<Module> modulesToSave = MODULE_NAMES.stream()
-                    .map(name -> {
-                        Module module = new Module();
-                        module.setNom(name);
-                        return module;
-                    })
-                    .collect(Collectors.toList());
-            existingModules = moduleRepository.saveAll(modulesToSave);
-            System.out.println("  ✅ " + existingModules.size() + " modules créés");
-        } else {
-            System.out.println("  ✅ " + existingModules.size() + " modules existants trouvés");
-        }
-        return existingModules;
-    }
-
+    @Transactional
     private void generateMockData(List<Module> modules) {
-        System.out.println("🏗️ Génération des données mockées...");
+        System.out.println("🚀 Génération des données mockées...");
         Random random = new Random();
 
-        // Create Niveaux and Classes
+        // Phase 1: Créer les niveaux et classes
+        List<Classe> allClasses = createNiveauxAndClasses();
+        System.out.println("✅ Phase 1 terminée: " + allClasses.size() + " classes créées");
+
+        // Phase 2: Créer les professeurs
+        List<Professeur> allProfesseurs = createProfesseurs(modules);
+        System.out.println("✅ Phase 2 terminée: " + allProfesseurs.size() + " professeurs créés");
+
+        // Phase 3: Assigner les professeurs aux classes
+        assignProfesseursToClasses(allProfesseurs, allClasses);
+        System.out.println("✅ Phase 3 terminée: Professeurs assignés aux classes");
+
+        // Phase 4: Créer les élèves
+        createStudents(allClasses);
+        System.out.println("✅ Phase 4 terminée: Élèves créés");
+
+        // Phase 5: Créer les cours - CORRECTION PRINCIPALE
+        List<Cours> coursCrees = createCourses(allProfesseurs, allClasses, modules);
+        System.out.println("✅ Phase 5 terminée: " + coursCrees.size() + " cours créés");
+
+        // Phase 6: Créer les absences si des cours existent
+        if (!coursCrees.isEmpty()) {
+            generateAbsences(coursCrees);
+            System.out.println("✅ Phase 6 terminée: Absences générées");
+        }
+    }
+
+    private List<Classe> createNiveauxAndClasses() {
+        System.out.println("📚 Création des niveaux et classes...");
+        List<Classe> allClasses = new ArrayList<>();
+        Random random = new Random();
+
         List<NiveauState> niveauxStates = Arrays.asList(
                 NiveauState.SIXIEME, NiveauState.CINQUIEME,
                 NiveauState.QUATRIEME, NiveauState.TROISIEME);
 
-        // Lists to store all generated entities
-        List<Professeur> allProfesseurs = new ArrayList<>();
-        List<Classe> allClasses = new ArrayList<>();
-
-        // Phase 1: Create Niveaux and Classes
-        System.out.println("📋 Phase 1: Création des niveaux et classes...");
         for (NiveauState niveauState : niveauxStates) {
-            Niveau niveau = createNiveau(niveauState);
+            // Créer le niveau
+            Niveau niveau = new Niveau();
+            niveau.setNiveauState(niveauState);
+            niveau = niveauRepository.save(niveau);
 
-            // Create 2-3 classes per niveau
-            for (int i = 1; i <= 2 + random.nextInt(2); i++) {
-                Classe classe = createClasse(niveau, niveauState, i);
-                allClasses.add(classe);
+            // Créer 2-3 classes par niveau
+            int nombreClasses = 2 + random.nextInt(2);
+            for (int i = 1; i <= nombreClasses; i++) {
+                Classe classe = new Classe();
+                classe.setNomClasse(niveauState.toString() + " - Classe " + i);
+                classe.setNiveau(niveau);
+                classe.setEffectifs(0); // Sera mis à jour lors de la création des élèves
+
+                Classe savedClasse = classeRepository.save(classe);
+                allClasses.add(savedClasse);
+
+                System.out.println("   ✓ Classe créée: " + savedClasse.getNomClasse());
             }
         }
-        System.out.println("  ✅ " + allClasses.size() + " classes créées");
 
-        // Phase 2: Create Professeurs
-        System.out.println("👨‍🏫 Phase 2: Création des professeurs...");
-        allProfesseurs = generateProfesseurs(1 + random.nextInt(3), modules); // 8-12 professeurs
-        System.out.println("  ✅ " + allProfesseurs.size() + " professeurs créés");
-
-        // Phase 3: Assign professors to classes
-        System.out.println("🔗 Phase 3: Attribution des professeurs aux classes...");
-        assignProfesseursToClasses(allProfesseurs, allClasses);
-        System.out.println("  ✅ Attribution terminée");
-
-        // Phase 4: Generate students for each class
-        System.out.println("👥 Phase 4: Génération des élèves...");
-        int totalEleves = 0;
-        for (Classe classe : allClasses) {
-            List<Eleve> eleves = generateEleves(classe, 20 + random.nextInt(10));
-            totalEleves += eleves.size();
-        }
-        System.out.println("  ✅ " + totalEleves + " élèves créés");
-
-        // Phase 5: Generate courses
-        System.out.println("📅 Phase 5: Génération des cours...");
-        generateCourses(allProfesseurs, modules);
+        return allClasses;
     }
 
-    private Niveau createNiveau(NiveauState niveauState) {
-        Niveau niveau = new Niveau();
-        niveau.setNiveauState(niveauState);
-        return niveauRepository.save(niveau);
-    }
-
-    private Classe createClasse(Niveau niveau, NiveauState niveauState, int classNumber) {
-        Classe classe = new Classe();
-        classe.setNomClasse(niveauState + " Classe " + classNumber);
-        classe.setNiveau(niveau);
-        return classeRepository.save(classe);
-    }
-
-    private List<Professeur> generateProfesseurs(int count, List<Module> modules) {
-        Random random = new Random();
+    private List<Professeur> createProfesseurs(List<Module> modules) {
+        System.out.println("👨‍🏫 Création des professeurs...");
         List<Professeur> professeurs = new ArrayList<>();
+        Random random = new Random();
 
-        for (int i = 0; i < count; i++) {
+        // Créer 8-12 professeurs
+        int nombreProfesseurs = 8 + random.nextInt(5);
+
+        for (int i = 0; i < nombreProfesseurs; i++) {
             try {
+                // Créer le professeur
                 Professeur professeur = new Professeur();
                 professeur.setNom(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
                 professeur.setPrenom(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
                 professeur.setEmail(professeur.getPrenom().toLowerCase() + "." +
-                        professeur.getNom().toLowerCase() + "@ecole.com");
+                        professeur.getNom().toLowerCase() + "@ecole.sn");
                 professeur.setDateNaissance(
-                        LocalDate.of(1975 + random.nextInt(20), 1 + random.nextInt(12), 1 + random.nextInt(28)));
+                        LocalDate.of(1970 + random.nextInt(25), 1 + random.nextInt(12), 1 + random.nextInt(28)));
                 professeur.setSexe(random.nextBoolean() ? "M" : "F");
-                professeur.setAdresse(random.nextInt(100) + " Rue de l'École");
-                professeur.setVille("Paris");
+                professeur.setAdresse((10 + random.nextInt(90)) + " Avenue Bourguiba");
+                professeur.setVille("Dakar");
 
-                // Save the professor first
+                // Sauvegarder le professeur
                 Professeur savedProfesseur = professeurRepository.save(professeur);
 
-                // Create ProfesseurModule relationships
-                List<Module> shuffledModules = new ArrayList<>(modules);
-                Collections.shuffle(shuffledModules);
-                int moduleCount = 1 + random.nextInt(2); // 1-2 modules par professeur pour éviter la surcharge
-
-                List<ProfesseurModule> professeurModules = shuffledModules.stream()
-                        .limit(moduleCount)
-                        .map(module -> {
-                            ProfesseurModule pm = new ProfesseurModule();
-                            pm.setProfesseur(savedProfesseur);
-                            pm.setModule(module);
-                            return pm;
-                        })
-                        .collect(Collectors.toList());
-
-                professeurModuleRepository.saveAll(professeurModules);
-                savedProfesseur.setProfesseurModules(professeurModules);
+                // Assigner 1-3 modules au professeur
+                assignModulesToProfesseur(savedProfesseur, modules);
 
                 professeurs.add(savedProfesseur);
+                System.out.println(
+                        "   ✓ Professeur créé: " + savedProfesseur.getPrenom() + " " + savedProfesseur.getNom());
+
             } catch (Exception e) {
-                System.err.println("❌ Erreur création professeur " + i + " : " + e.getMessage());
+                System.err.println("   ❌ Erreur création professeur " + (i + 1) + ": " + e.getMessage());
             }
         }
 
         return professeurs;
     }
 
-    private void assignProfesseursToClasses(List<Professeur> professeurs, List<Classe> classes) {
+    private void assignModulesToProfesseur(Professeur professeur, List<Module> modules) {
         Random random = new Random();
 
-        if (professeurs.isEmpty()) {
-            System.err.println("❌ Aucun professeur à assigner !");
+        // Mélanger les modules et en prendre 1-3
+        List<Module> shuffledModules = new ArrayList<>(modules);
+        Collections.shuffle(shuffledModules);
+
+        int nombreModules = 1 + random.nextInt(3); // 1 à 3 modules
+        nombreModules = Math.min(nombreModules, modules.size());
+
+        for (int i = 0; i < nombreModules; i++) {
+            try {
+                ProfesseurModule professeurModule = new ProfesseurModule();
+                professeurModule.setProfesseur(professeur);
+                professeurModule.setModule(shuffledModules.get(i));
+                professeurModuleRepository.save(professeurModule);
+            } catch (Exception e) {
+                System.err.println("     ❌ Erreur assignation module: " + e.getMessage());
+            }
+        }
+    }
+
+    private void assignProfesseursToClasses(List<Professeur> professeurs, List<Classe> classes) {
+        System.out.println("🔗 Attribution des professeurs aux classes...");
+        Random random = new Random();
+
+        if (professeurs.isEmpty() || classes.isEmpty()) {
+            System.err.println("❌ Impossible d'assigner: professeurs ou classes vides");
             return;
         }
 
-        System.out
-                .println("  🔄 Attribution de " + professeurs.size() + " professeurs à " + classes.size() + " classes");
-
+        // Étape 1: Assigner un professeur principal à chaque classe
         for (Classe classe : classes) {
             try {
-                // Assign a main professor
                 Professeur profPrincipal = professeurs.get(random.nextInt(professeurs.size()));
                 classe.setProfPrincipal(profPrincipal);
                 classeRepository.save(classe);
 
-                // Assign 2-3 professors to each class (réduit pour éviter la surcharge)
-                List<Professeur> shuffledProfs = new ArrayList<>(professeurs);
-                Collections.shuffle(shuffledProfs);
-                int profCount = Math.min(2 + random.nextInt(2), professeurs.size()); // 2-3 professeurs max
-
-                for (int i = 0; i < profCount; i++) {
-                    ProfesseurClasse professeurClasse = new ProfesseurClasse();
-                    professeurClasse.setProfesseur(shuffledProfs.get(i));
-                    professeurClasse.setClasse(classe);
-                    professeurClasseRepository.save(professeurClasse);
-                }
+                System.out.println("   ✓ Prof principal " + classe.getNomClasse() +
+                        ": " + profPrincipal.getPrenom() + " " + profPrincipal.getNom());
             } catch (Exception e) {
-                System.err.println("❌ Erreur attribution classe " + classe.getNomClasse() + " : " + e.getMessage());
+                System.err.println("   ❌ Erreur assignation prof principal: " + e.getMessage());
             }
         }
 
-        // Update professor relationships - CRITIQUE: reload depuis la DB
-        System.out.println("  🔄 Mise à jour des relations professeurs...");
+        // Étape 2: Créer les relations ProfesseurClasse pour TOUS les professeurs
         for (Professeur professeur : professeurs) {
             try {
-                // Recharger le professeur depuis la DB pour avoir les relations à jour
-                Professeur reloadedProf = professeurRepository.findById(professeur.getId()).orElse(null);
-                if (reloadedProf != null) {
-                    List<ProfesseurClasse> professeurClasses = professeurClasseRepository
-                            .findByProfesseur(reloadedProf);
-                    reloadedProf.setProfesseurClasses(professeurClasses);
-                    professeurRepository.save(reloadedProf);
+                // Assigner ce professeur à 1-3 classes aléatoires
+                List<Classe> shuffledClasses = new ArrayList<>(classes);
+                Collections.shuffle(shuffledClasses);
+
+                int nombreClassesPourProf = 2 + random.nextInt(2); // 2 à 3 classes par prof
+                nombreClassesPourProf = Math.min(nombreClassesPourProf, classes.size());
+
+                for (int i = 0; i < nombreClassesPourProf; i++) {
+                    Classe classe = shuffledClasses.get(i);
+
+                    // Vérifier si la relation existe déjà
+                    boolean relationExists = professeurClasseRepository
+                            .findByProfesseur(professeur)
+                            .stream()
+                            .anyMatch(pc -> pc.getClasse().getId().equals(classe.getId()));
+
+                    if (!relationExists) {
+                        ProfesseurClasse professeurClasse = new ProfesseurClasse();
+                        professeurClasse.setProfesseur(professeur);
+                        professeurClasse.setClasse(classe);
+                        professeurClasseRepository.save(professeurClasse);
+
+                        System.out.println("   ✓ Relation créée: " + professeur.getPrenom() +
+                                " -> " + classe.getNomClasse());
+                    }
                 }
             } catch (Exception e) {
-                System.err
-                        .println("❌ Erreur mise à jour professeur " + professeur.getPrenom() + " : " + e.getMessage());
+                System.err.println("   ❌ Erreur création relations pour " +
+                        professeur.getPrenom() + ": " + e.getMessage());
             }
         }
     }
 
-    private List<Eleve> generateEleves(Classe classe, int count) {
+    private void createStudents(List<Classe> classes) {
+        System.out.println("👨‍🎓 Création des élèves...");
         Random random = new Random();
-        List<Eleve> eleves = new ArrayList<>();
+        int totalEleves = 0;
 
-        for (int i = 0; i < count; i++) {
-            Eleve eleve = new Eleve();
-            eleve.setNom(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
-            eleve.setPrenom(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
-            eleve.setDateNaissance(LocalDate.now().minusYears(11 + random.nextInt(4)));
-            eleve.setSexe(random.nextBoolean() ? "M" : "F");
-            eleve.setAdresse(random.nextInt(100) + " Rue de l'École");
-            eleve.setVille("Paris");
-            eleve.setEmail(eleve.getPrenom().toLowerCase() + "." +
-                    eleve.getNom().toLowerCase() + "@eleve.com");
-            eleve.setClasse(classe);
-            eleves.add(eleve);
+        for (Classe classe : classes) {
+            try {
+                // 15-25 élèves par classe
+                int nombreEleves = 15 + random.nextInt(11);
+                List<Eleve> eleves = new ArrayList<>();
+
+                for (int i = 0; i < nombreEleves; i++) {
+                    Eleve eleve = new Eleve();
+                    eleve.setNom(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
+                    eleve.setPrenom(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
+                    eleve.setDateNaissance(LocalDate.now().minusYears(11 + random.nextInt(4)));
+                    eleve.setSexe(random.nextBoolean() ? "M" : "F");
+                    eleve.setAdresse((10 + random.nextInt(90)) + " Rue de Sandaga");
+                    eleve.setVille("Dakar");
+                    eleve.setEmail(eleve.getPrenom().toLowerCase() + "." +
+                            eleve.getNom().toLowerCase() + "@eleve.sn");
+                    eleve.setClasse(classe);
+                    eleves.add(eleve);
+                }
+
+                // Sauvegarder tous les élèves de la classe
+                eleveRepository.saveAll(eleves);
+
+                // Mettre à jour les effectifs de la classe
+                classe.setEffectifs(eleves.size());
+                classeRepository.save(classe);
+
+                totalEleves += eleves.size();
+                System.out.println("   ✓ " + classe.getNomClasse() + ": " + eleves.size() + " élèves");
+
+            } catch (Exception e) {
+                System.err.println("   ❌ Erreur création élèves pour " + classe.getNomClasse() + ": " + e.getMessage());
+            }
         }
 
-        eleveRepository.saveAll(eleves);
-        classe.setEtudiants(eleves);
-        classe.setEffectifs(eleves.size());
-        classeRepository.save(classe);
-
-        return eleves;
+        System.out.println("   ✅ Total élèves créés: " + totalEleves);
     }
 
-    private void generateCourses(List<Professeur> allProfesseurs, List<Module> modules) {
-        Random random = new Random();
+    // MÉTHODE CORRIGÉE - Nouvelle version avec meilleure logique
+    // MÉTHODE CORRIGÉE - Nouvelle version avec sauvegarde des cours
+    private List<Cours> createCourses(List<Professeur> professeurs, List<Classe> classes, List<Module> modules) {
+        System.out.println("📖 Création des cours...");
+
+        if (professeurs.isEmpty() || classes.isEmpty() || modules.isEmpty()) {
+            System.err.println("❌ Impossible de créer les cours: données manquantes");
+            System.err.println("   Professeurs: " + professeurs.size());
+            System.err.println("   Classes: " + classes.size());
+            System.err.println("   Modules: " + modules.size());
+            return new ArrayList<>();
+        }
+
         List<Cours> coursList = new ArrayList<>();
+        Random random = new Random();
 
-        // Récupérer toutes les classes FRAÎCHES depuis la DB
-        List<Classe> allClasses = classeRepository.findAll();
-
-        // Prédéfinir des créneaux horaires
+        // Créneaux horaires
         List<LocalTime> timeSlots = Arrays.asList(
-                LocalTime.of(8, 0), LocalTime.of(9, 30),
-                LocalTime.of(11, 0), LocalTime.of(14, 0),
-                LocalTime.of(15, 30));
+                LocalTime.of(8, 0), LocalTime.of(9, 30), LocalTime.of(11, 0),
+                LocalTime.of(14, 0), LocalTime.of(15, 30), LocalTime.of(17, 0));
 
-        // Déterminer la plage de dates (cette semaine)
-        LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        // Période: seulement cette semaine (5 jours ouvrables)
+        LocalDate startDate = LocalDate.now().with(DayOfWeek.MONDAY);
+        List<LocalDate> joursOuvrables = new ArrayList<>();
 
-        System.out.println("  📊 État actuel :");
-        System.out.println("    - Professeurs : " + allProfesseurs.size());
-        System.out.println("    - Classes : " + allClasses.size());
-        System.out.println("    - Modules : " + modules.size());
+        // Générer 5 jours ouvrables (une seule semaine)
+        for (int jour = 0; jour < 5; jour++) { // Lundi à Vendredi
+            joursOuvrables.add(startDate.plusDays(jour));
+        }
 
-        // CRITIQUE: Recharger les professeurs depuis la DB avec leurs relations
-        List<Professeur> refreshedProfesseurs = professeurRepository.findAll();
-        System.out.println("    - Professeurs rechargés : " + refreshedProfesseurs.size());
+        System.out.println("   📅 Jours ouvrables disponibles: " + joursOuvrables.size());
 
+        // LIMITE STRICTE de 20 cours maximum
+        final int LIMITE_COURS = 20;
         int totalCoursGeneres = 0;
-        int professeursAvecCours = 0;
 
-        // Pour chaque professeur
-        for (Professeur professeur : refreshedProfesseurs) {
+        // Créer une liste de toutes les combinaisons possibles
+        List<CombinaisonCours> combinaisons = new ArrayList<>();
+
+        for (Professeur professeur : professeurs) {
             try {
-                // Récupérer ses modules DEPUIS LA DB
+                // Récupérer les modules du professeur
                 List<ProfesseurModule> profModules = professeurModuleRepository.findByProfesseur(professeur);
-                List<Module> professeurModules = profModules.stream()
-                        .map(ProfesseurModule::getModule)
-                        .collect(Collectors.toList());
-
-                // Récupérer ses classes DEPUIS LA DB
-                List<ProfesseurClasse> profClasses = professeurClasseRepository.findByProfesseur(professeur);
-                List<Classe> professorClasses = profClasses.stream()
-                        .map(ProfesseurClasse::getClasse)
-                        .collect(Collectors.toList());
-
-                System.out.println("  👨‍🏫 " + professeur.getPrenom() + " " + professeur.getNom() +
-                        " - Modules: " + professeurModules.size() + ", Classes: " + professorClasses.size());
-
-                // Skip si pas de modules ou classes
-                if (professeurModules.isEmpty() || professorClasses.isEmpty()) {
-                    System.out.println("    ⚠️ Ignoré (pas de modules ou classes)");
+                if (profModules.isEmpty()) {
+                    System.out.println("   ⚠️ " + professeur.getPrenom() + " n'a aucun module");
                     continue;
                 }
 
-                professeursAvecCours++;
+                // Récupérer les classes du professeur
+                List<ProfesseurClasse> profClasses = professeurClasseRepository.findByProfesseur(professeur);
+                if (profClasses.isEmpty()) {
+                    System.out.println("   ⚠️ " + professeur.getPrenom() + " n'a aucune classe");
+                    continue;
+                }
 
-                // Générer 2-3 cours pour ce professeur (réduit pour éviter surcharge)
-                int coursCount = 2 + random.nextInt(2);
+                System.out.println("   👨‍🏫 " + professeur.getPrenom() + " " + professeur.getNom() +
+                        " - Modules: " + profModules.size() + ", Classes: " + profClasses.size());
 
-                for (int i = 0; i < coursCount; i++) {
-                    try {
-                        Cours cours = new Cours();
-
-                        // Sélectionner un module et une classe
-                        Module module = professeurModules.get(random.nextInt(professeurModules.size()));
-                        Classe classe = professorClasses.get(random.nextInt(professorClasses.size()));
-
-                        cours.setClasse(classe);
-                        cours.setModule(module);
-                        cours.setProfesseur(professeur);
-
-                        // Date du cours (lundi à vendredi)
-                        LocalDate courseDate = startOfWeek.plusDays(random.nextInt(5));
-                        cours.setDate(courseDate);
-
-                        // Créneau horaire
-                        LocalTime heureDebut = timeSlots.get(random.nextInt(timeSlots.size()));
-                        cours.setHeureDebut(heureDebut);
-                        cours.setHeureFin(heureDebut.plusHours(1));
-                        cours.setNbrHeures(1);
-
-                        coursList.add(cours);
-                        totalCoursGeneres++;
-
-                    } catch (Exception e) {
-                        System.err.println("    ❌ Erreur création cours " + i + " : " + e.getMessage());
+                // Créer les combinaisons pour ce professeur
+                for (ProfesseurModule profModule : profModules) {
+                    for (ProfesseurClasse profClasse : profClasses) {
+                        combinaisons
+                                .add(new CombinaisonCours(professeur, profModule.getModule(), profClasse.getClasse()));
                     }
                 }
 
-                System.out.println("    ✅ " + coursCount + " cours générés");
-
             } catch (Exception e) {
-                System.err
-                        .println("  ❌ Erreur traitement professeur " + professeur.getPrenom() + " : " + e.getMessage());
+                System.err.println("   Erreur pour professeur " + professeur.getPrenom() + ": " + e.getMessage());
             }
         }
 
-        System.out.println("  📈 Statistiques génération :");
-        System.out
-                .println("    - Professeurs avec cours : " + professeursAvecCours + "/" + refreshedProfesseurs.size());
-        System.out.println("    - Total cours à sauvegarder : " + coursList.size());
+        // Mélanger les combinaisons pour avoir une distribution aléatoire
+        Collections.shuffle(combinaisons, random);
 
-        // Sauvegarder tous les cours
-        if (!coursList.isEmpty()) {
-            try {
-                System.out.println("  💾 Sauvegarde des cours...");
-                List<Cours> savedCours = coursRepository.saveAll(coursList);
-                System.out.println("  ✅ " + savedCours.size() + " cours sauvegardés avec succès");
+        System.out.println("   🔢 Total combinaisons possibles: " + combinaisons.size());
+        System.out.println("   🎯 Limite fixée: " + LIMITE_COURS + " cours maximum");
 
-                // Générer les absences
-                generateAbsences(savedCours);
-            } catch (Exception e) {
-                System.err.println("  ❌ Erreur lors de la sauvegarde des cours : " + e.getMessage());
-                e.printStackTrace();
+        // Créer les cours jusqu'à la limite STRICTE
+        for (CombinaisonCours combinaison : combinaisons) {
+            if (totalCoursGeneres >= LIMITE_COURS) {
+                System.out.println("   🛑 Limite de " + LIMITE_COURS + " cours atteinte, arrêt de la génération");
+                break;
             }
-        } else {
-            System.err.println("  ❌ Aucun cours à sauvegarder !");
+
+            try {
+                Cours cours = new Cours();
+
+                cours.setProfesseur(combinaison.professeur);
+                cours.setModule(combinaison.module);
+                cours.setClasse(combinaison.classe);
+
+                // Date aléatoire parmi les jours ouvrables
+                LocalDate courseDate = joursOuvrables.get(random.nextInt(joursOuvrables.size()));
+                // cours.setDate(courseDate);
+                // LocalDate courseDate = joursOuvrables.get(random.nextInt(joursOuvrables.size()));
+
+                // Conversion de LocalDate -> Date
+                ZoneId zoneId = ZoneId.systemDefault();
+                Date convertedDate = Date.from(courseDate.atStartOfDay(zoneId).toInstant());
+
+                cours.setDate(convertedDate);
+
+                // Heure aléatoire
+                LocalTime heureDebut = timeSlots.get(random.nextInt(timeSlots.size()));
+                cours.setHeureDebut(heureDebut);
+                cours.setHeureFin(heureDebut.plusHours(1).plusMinutes(30));
+                cours.setNbrHeures(2);
+
+                // ✅ CORRECTION PRINCIPALE: Sauvegarder le cours pour générer son ID
+                Cours savedCours = coursRepository.save(cours);
+                coursList.add(savedCours);
+                totalCoursGeneres++;
+
+                System.out.println("   ✓ Cours créé [ID: " + savedCours.getId() + "] - " +
+                        combinaison.professeur.getPrenom() + " - " +
+                        combinaison.module.getNom() + " - " +
+                        combinaison.classe.getNomClasse());
+
+            } catch (Exception e) {
+                System.err.println("     ❌ Erreur création cours: " + e.getMessage());
+            }
+        }
+
+        System.out.println("   ✅ TOTAL FINAL: " + totalCoursGeneres + " cours générés et sauvegardés (limite: "
+                + LIMITE_COURS + ")");
+        return coursList;
+    }
+
+    // Classe utilitaire pour les combinaisons
+    private static class CombinaisonCours {
+        final Professeur professeur;
+        final Module module;
+        final Classe classe;
+
+        public CombinaisonCours(Professeur professeur, Module module, Classe classe) {
+            this.professeur = professeur;
+            this.module = module;
+            this.classe = classe;
         }
     }
 
     private void generateAbsences(List<Cours> coursList) {
+        System.out.println("📋 Génération des absences...");
         Random random = new Random();
         List<Abscence> absencesList = new ArrayList<>();
+        List<Justitfication> justificatifs = new ArrayList<>();
 
-        System.out.println("  🏃‍♂️ Génération des absences pour " + coursList.size() + " cours...");
+        int totalAbsencesGenerees = 0;
 
         for (Cours cours : coursList) {
             try {
+                // Vérifier que le cours a une classe valide
+                if (cours.getClasse() == null) {
+                    System.out.println("   ⚠️ Cours sans classe détecté, ignoré");
+                    continue;
+                }
+
                 List<Eleve> eleves = eleveRepository.findByClasse(cours.getClasse());
 
-                for (Eleve eleve : eleves) {
-                    // 10% de chance d'être absent (réduit pour éviter trop d'absences)
-                    if (random.nextDouble() < 0.10) {
-                        Abscence absence = new Abscence();
-                        absence.setEleve(eleve);
-                        absence.setCours(cours);
-                        absence.setTypeAbscence(TypeAbscence.Absent);
-                        absence.setStatutAbscence(StatutAbscence.ENATTENTE);
-                        absence.setJustificatif("Absence non justifiée");
+                if (eleves.isEmpty()) {
+                    System.out.println("   ⚠️ Aucun élève trouvé pour la classe " + cours.getClasse().getNomClasse());
+                    continue;
+                }
 
-                        absencesList.add(absence);
+                int absencesPourCeCours = 0;
+
+                for (Eleve eleve : eleves) {
+                    try {
+                        // 15% de chance d'être absent à chaque cours
+                        if (random.nextDouble() < 0.15) {
+                            // Créer l'absence
+                            Abscence absence = new Abscence();
+                            absence.setEleve(eleve);
+                            absence.setCours(cours);
+                            absence.setTypeAbscence(random.nextBoolean() ? TypeAbscence.Absent : TypeAbscence.Retard);
+                            absence.setStatutAbscence(StatutAbscence.NON_JUSTIFIER); // Changé de JUSTIFIER à
+                                                                                     // NON_JUSTIFIER par défaut
+
+                            absencesList.add(absence);
+                            absencesPourCeCours++;
+                            totalAbsencesGenerees++;
+
+                            // Créer le justificatif seulement si l'absence sera justifiée (30% des cas)
+                            if (random.nextDouble() < 0.3) {
+                                absence.setStatutAbscence(StatutAbscence.JUSTIFIER);
+
+                                Justitfication justificatif = new Justitfication();
+                                justificatif.setAbscence(absence);
+                                justificatif.setStatutJustification(getRandomStatutJustification(random));
+                                justificatif.setJustificatif(getRandomJustificatif(random));
+
+                                justificatifs.add(justificatif);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("     ❌ Erreur génération absence pour élève " +
+                                eleve.getPrenom() + " " + eleve.getNom() + ": " + e.getMessage());
                     }
                 }
+
+                if (absencesPourCeCours > 0) {
+                    System.out.println("   ✓ Cours " + cours.getId() + " (" +
+                            cours.getClasse().getNomClasse() + " - " +
+                            cours.getModule().getNom() + "): " +
+                            absencesPourCeCours + " absences");
+                }
+
             } catch (Exception e) {
-                System.err.println("    ❌ Erreur génération absences cours " + cours.getId() + " : " + e.getMessage());
+                System.err
+                        .println("   ❌ Erreur génération absences pour cours " + cours.getId() + ": " + e.getMessage());
+                e.printStackTrace(); // Pour voir la stack trace complète
             }
         }
 
+        // Sauvegarder les absences d'abord
         try {
             if (!absencesList.isEmpty()) {
-                absenceRepository.saveAll(absencesList);
-                System.out.println("  ✅ " + absencesList.size() + " absences générées et sauvegardées");
+                System.out.println("   💾 Sauvegarde de " + absencesList.size() + " absences...");
+                List<Abscence> savedAbsences = absenceRepository.saveAll(absencesList);
+                System.out.println("   ✅ " + savedAbsences.size() + " absences sauvegardées");
+
+                // Ensuite sauvegarder les justificatifs
+                if (!justificatifs.isEmpty()) {
+                    System.out.println("   💾 Sauvegarde de " + justificatifs.size() + " justificatifs...");
+                    justificatifRepository.saveAll(justificatifs);
+                    System.out.println("   ✅ " + justificatifs.size() + " justificatifs sauvegardés");
+                }
             } else {
-                System.out.println("  ℹ️ Aucune absence générée");
+                System.out.println("   ℹ️ Aucune absence générée");
             }
         } catch (Exception e) {
-            System.err.println("  ❌ Erreur sauvegarde absences : " + e.getMessage());
+            System.err.println("   ❌ ERREUR CRITIQUE lors de la sauvegarde:");
+            System.err.println("   Message: " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Échec de la sauvegarde des absences", e);
+        }
+
+        System.out.println("   📊 Résumé: " + totalAbsencesGenerees + " absences générées, " +
+                justificatifs.size() + " justificatifs créés");
+    }
+
+    // Méthodes utilitaires pour générer des données plus réalistes
+    private StatutJustification getRandomStatutJustification(Random random) {
+        StatutJustification[] statuts = StatutJustification.values();
+        return statuts[random.nextInt(statuts.length)];
+    }
+
+    private String getRandomJustificatif(Random random) {
+        List<String> justificatifs = Arrays.asList(
+                "Rendez-vous médical",
+                "Maladie",
+                "Problème de transport",
+                "Affaire familiale urgente",
+                "Convocation administrative",
+                "Accident de circulation",
+                "Panne de véhicule");
+        return justificatifs.get(random.nextInt(justificatifs.size()));
+    }
+    // Méthodes utilitaires pour générer des données plus réalistes
+
+    private void printFinalResults() {
+        System.out.println("\n=== 📊 RÉSULTATS FINAUX ===");
+        try {
+            System.out.println("👨‍🏫 Professeurs créés    : " + professeurRepository.count());
+            System.out.println("🏫 Niveaux créés        : " + niveauRepository.count());
+            System.out.println("📚 Classes créées       : " + classeRepository.count());
+            System.out.println("👨‍🎓 Élèves créés         : " + eleveRepository.count());
+            System.out.println("📖 Cours créés          : " + coursRepository.count());
+            System.out.println("❌ Absences créées      : " + absenceRepository.count());
+            System.out.println("🔗 Relations Prof-Classe: " + professeurClasseRepository.count());
+            System.out.println("📝 Relations Prof-Module: " + professeurModuleRepository.count());
+            System.out.println("=== ✅ GÉNÉRATION TERMINÉE AVEC SUCCÈS ===");
+        } catch (Exception e) {
+            System.err.println("❌ Erreur lors de l'affichage des résultats: " + e.getMessage());
         }
     }
 }

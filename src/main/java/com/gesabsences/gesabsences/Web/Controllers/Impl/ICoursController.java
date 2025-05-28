@@ -1,6 +1,8 @@
 package com.gesabsences.gesabsences.Web.Controllers.Impl;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -58,8 +60,20 @@ public class ICoursController implements CoursController {
     @Override
     public ResponseEntity<?> findCours(String id, String startDate, String endDate) {
         var classes = classeService.findById(id);
-        List<Cours> cours = coursService.findByClasseAndDateBetween(classes, LocalDate.parse(startDate),
-                LocalDate.parse(endDate));
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        Date startDateConverted = Date.from(start.atStartOfDay(zoneId).toInstant());
+        Date endDateConverted = Date.from(end.plusDays(1).atStartOfDay(zoneId).toInstant()); // pour inclure tout le
+                                                                                             // jour de fin
+
+        List<Cours> cours = coursService.findByClasseAndDateBetween(classes, startDateConverted, endDateConverted);
+
+        // List<Cours> cours = coursService.findByClasseAndDateBetween(classes,
+        // LocalDate.parse(startDate),
+        // LocalDate.parse(endDate));
         var response = cours.stream().map(coursMapper::toDto).toList();
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, response, "Cours"), HttpStatus.OK);
     }

@@ -16,7 +16,8 @@ import lombok.Setter;
 @Document("abscence")
 public class Abscence extends AbstractType {
 
-    private String justificatif;
+    @DBRef
+    private Justitfication justificatif;
 
     private TypeAbscence typeAbscence;
 

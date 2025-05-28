@@ -23,7 +23,6 @@ public interface AbscenceContoller extends Controller<Abscence> {
     @GetMapping("/cours/{id}")
     ResponseEntity<Map<String, Object>> findAbsenceInCours(@PathVariable String id);
 
-    // pour delete j'utilise quelle @ ??
     @DeleteMapping("/delete/{id}")
     ResponseEntity<Map<String, Object>> Delete(@PathVariable String id);
 

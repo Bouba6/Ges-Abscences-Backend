@@ -1,6 +1,7 @@
 package com.gesabsences.gesabsences.data.Services.Impl;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class ICoursService extends IService<Cours, CoursRepository> implements C
     }
 
     @Override
-    public List<Cours> findByClasseAndDateBetween(Classe classe, LocalDate startDate, LocalDate endDate) {
+    public List<Cours> findByClasseAndDateBetween(Classe classe, Date startDate, Date endDate) {
         return coursRepository.findByClasseAndDateBetween(classe, startDate, endDate);
     }
 

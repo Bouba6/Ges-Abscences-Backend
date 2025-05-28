@@ -2,6 +2,7 @@ package com.gesabsences.gesabsences.data.Entities;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -34,7 +35,7 @@ public class Cours extends AbstractType {
 
     private LocalTime heureFin;
 
-    private LocalDate date;
+    private Date date;
 
     private String salle;
 
