@@ -13,7 +13,7 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-// @Document("abscence")
+@Document("abscence")
 public class Abscence extends AbstractType {
 
     @DBRef

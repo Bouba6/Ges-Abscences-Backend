@@ -16,7 +16,7 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-// @Document("cours")
+@Document("cours")
 public class Cours extends AbstractType {
 
    
