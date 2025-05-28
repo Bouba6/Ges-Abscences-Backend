@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-@Document(collection = "professeurs")
+// @Document(collection = "professeurs")
 public class Professeur extends Personne {
 
     @DBRef

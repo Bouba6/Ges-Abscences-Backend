@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-@Document("niveau")
+// @Document("niveau")
 public class Niveau extends AbstractType {
 
     @DBRef

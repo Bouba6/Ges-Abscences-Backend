@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-@Document("ProfesseurModule")
+// @Document("ProfesseurModule")
 public class ProfesseurModule extends AbstractType {
 
     @DBRef

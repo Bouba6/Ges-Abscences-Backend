@@ -12,7 +12,7 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-@Document(collection = "classes")
+// @Document(collection = "classes")
 public class Classe extends AbstractType {
 
     private String nomClasse;

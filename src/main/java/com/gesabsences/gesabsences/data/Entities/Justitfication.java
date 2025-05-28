@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 
-@Document("justitfication")
+// @Document("justitfication")
 public class Justitfication {
 
     private String justificatif;

@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document("module")
+// @Document("module")
 public class Module extends AbstractType {
 
     private String nom;
