@@ -49,8 +49,9 @@ public class WebIEleveController implements EleveController {
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectdById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'SelectdById'");
+
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,
+                eleveMapper.toDto(eleveService.findById(id)), "Eleve"), HttpStatus.OK);
     }
 
     @Override

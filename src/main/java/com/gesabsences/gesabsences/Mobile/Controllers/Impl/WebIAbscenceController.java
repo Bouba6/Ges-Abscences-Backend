@@ -25,9 +25,6 @@ import com.gesabsences.gesabsences.data.Services.EleveService;
 
 import lombok.RequiredArgsConstructor;
 
-
-
-
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -69,8 +66,8 @@ public class WebIAbscenceController implements AbscenceContoller {
 
         Cours cours = coursService.findById(abscence.getCoursId());
         Eleve eleve = eleveService.findById(abscence.getEleveId());
-        abscence.setCoursId(cours.getId());
-        abscence.setEleveId(eleve.getId());
+        // abscence.setCoursId(cours.getId());
+        // abscence.setEleveId(eleve.getId());
 
         Abscence abscence1 = abscenceMapper.toEntity(abscence);
         abscence1.setEleve(eleve);
@@ -102,8 +99,8 @@ public class WebIAbscenceController implements AbscenceContoller {
 
         Cours cours = coursService.findById(objet.getCoursId());
         Eleve eleve = eleveService.findById(objet.getEleveId());
-        objet.setCoursId(cours.getId());
-        objet.setEleveId(eleve.getId());
+        // objet.setCoursId(cours.getId());
+        // objet.setEleveId(eleve.getId());
 
         Abscence abscence1 = abscenceMapper.toEntity(objet);
         abscence1.setEleve(eleve);
@@ -113,7 +110,14 @@ public class WebIAbscenceController implements AbscenceContoller {
                 HttpStatus.OK);
     }
 
-   
+    @Override
+    public ResponseEntity<Map<String, Object>> findAbsenceByEleve(String id) {
 
+        Eleve eleve = eleveService.findById(id);
+        List<Abscence> abscences = abscenceService.findByEleveId(eleve.getId());
+        return new ResponseEntity<>(
+                RestResponse.response(HttpStatus.OK, abscences.stream().map(abscenceMapper::toDto), "Abscence"),
+                HttpStatus.OK);
+    }
 
 }

@@ -41,7 +41,13 @@ public class IAbscenceService extends IService<Abscence, AbscenceRepository> imp
         Abscence abscence1 = absenceRepository.findById(id).get();
         // abscence1.setJustifiee(abscence.getJustifiee());
         // abscence1.setMotif(abscence.getMotif());
+        
         return absenceRepository.save(abscence1);
+    }
+
+    @Override
+    public List<Abscence> findByEleveId(String eleveId) {
+        return absenceRepository.findByEleveId(eleveId);
     }
 
 }

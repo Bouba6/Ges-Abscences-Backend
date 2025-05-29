@@ -9,8 +9,8 @@ import lombok.Data;
 
 @Data
 
-@Document("justitfication")
-public class Justitfication {
+@Document("justification")
+public class Justification extends AbstractType {
 
     private String justificatif;
 

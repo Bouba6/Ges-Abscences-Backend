@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gesabsences.gesabsences.Web.Controllers.JustificatifController;
 import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.Web.Dto.Response.justificatifResponse;
-import com.gesabsences.gesabsences.data.Entities.Justitfication;
+import com.gesabsences.gesabsences.data.Entities.Justification;
 import com.gesabsences.gesabsences.data.Services.JustificatifService;
 import com.gesabsences.gesabsences.Web.Mapper.JusticatifMapper;
 
@@ -43,7 +43,7 @@ public class IJustificatifController implements JustificatifController {
     public ResponseEntity<Map<String, Object>> SelectAll(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Justitfication> justificatifs = justificatifService.findAll(pageable);
+        Page<Justification> justificatifs = justificatifService.findAll(pageable);
         Page<justificatifResponse> justificatif = justificatifs.map(justificatifMapper::toDto);
 
         return new ResponseEntity<>(RestResponse.responsePaginate(HttpStatus.OK, justificatif.getContent(),
@@ -59,7 +59,7 @@ public class IJustificatifController implements JustificatifController {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> Update(String id, Justitfication objet) {
+    public ResponseEntity<Map<String, Object>> Update(String id, Justification objet) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Update'");
     }

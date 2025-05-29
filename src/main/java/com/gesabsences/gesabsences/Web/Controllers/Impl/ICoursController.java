@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gesabsences.gesabsences.Web.Controllers.CoursController;
+import com.gesabsences.gesabsences.Web.Dto.Response.CoursResponse;
 import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Cours;
+import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
+import com.gesabsences.gesabsences.data.Repositories.EleveRepository;
 import com.gesabsences.gesabsences.data.Services.ClasseService;
 import com.gesabsences.gesabsences.data.Services.CoursService;
+import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.data.Services.ProfesseurService;
 import com.gesabsences.gesabsences.Web.Mapper.CoursMapper;
 
@@ -31,6 +35,7 @@ public class ICoursController implements CoursController {
     private final ClasseService classeService;
     private final CoursMapper coursMapper;
     private final ProfesseurService professeurService;
+    private final EleveRepository eleveRepository;
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll(int page, int size) {
@@ -89,6 +94,23 @@ public class ICoursController implements CoursController {
                 LocalDate.parse(endDate));
         var response = cours.stream().map(coursMapper::toDto).toList();
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, response, "Cours"), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> getCoursForEleveToday(String eleveId) {
+        try {
+            Eleve eleve = eleveRepository.findById(eleveId).orElse(null);
+            if (eleve == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<Cours> cours = coursService.getCoursForEleveToday(eleve);
+
+            List<CoursResponse> Courses = cours.stream().map(coursMapper::toDto).toList();
+            return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, Courses, "Cours"), HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

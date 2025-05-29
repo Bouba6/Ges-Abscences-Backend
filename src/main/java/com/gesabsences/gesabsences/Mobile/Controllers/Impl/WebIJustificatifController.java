@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,10 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gesabsences.gesabsences.Mobile.Controllers.JustificatifController;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.justificatifResponse;
+import com.gesabsences.gesabsences.data.Entities.Abscence;
+import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
-import com.gesabsences.gesabsences.data.Entities.Justitfication;
+import com.gesabsences.gesabsences.data.Entities.Justification;
+import com.gesabsences.gesabsences.data.Enum.StatutJustification;
+import com.gesabsences.gesabsences.data.Services.CoursService;
+import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.data.Services.JustificatifService;
 import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobJusticatifMapper;
+import com.gesabsences.gesabsences.Mobile.Dto.Request.JustifierRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 public class WebIJustificatifController implements JustificatifController {
     private final JustificatifService justificatifService;
     private final MobJusticatifMapper justificatifMapper;
+    private final EleveService eleveService;
+    private final CoursService coursService;
 
     /************* ✨ Windsurf Command ⭐ *************/
     /**
@@ -44,7 +53,7 @@ public class WebIJustificatifController implements JustificatifController {
     public ResponseEntity<Map<String, Object>> SelectAll(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Justitfication> justificatifs = justificatifService.findAll(pageable);
+        Page<Justification> justificatifs = justificatifService.findAll(pageable);
         Page<justificatifResponse> justificatif = justificatifs.map(justificatifMapper::toDto);
 
         return new ResponseEntity<>(RestResponse.responsePaginate(HttpStatus.OK, justificatif.getContent(),
@@ -60,7 +69,7 @@ public class WebIJustificatifController implements JustificatifController {
     }
 
     @Override
-    public ResponseEntity<Map<String, Object>> Update(String id, Justitfication objet) {
+    public ResponseEntity<Map<String, Object>> Update(String id, Justification objet) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Update'");
     }
@@ -70,5 +79,29 @@ public class WebIJustificatifController implements JustificatifController {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Delete'");
     }
+
+    @Override
+    public ResponseEntity<?> findByIdEleve(String idEleve) {
+        return new ResponseEntity<>(justificatifService.findByEleve(idEleve), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findByIdCours(String idCours) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByIdCours'");
+    }
+
+    @Override
+    public ResponseEntity<?> create(JustifierRequest justifierRequest) {
+        Justification justification = justificatifMapper.toEntity(justifierRequest);
+        return new ResponseEntity<>(justificatifService.create(justification), HttpStatus.OK);
+    }
+
+    // private String justificatif;
+
+    // @DBRef
+    // private Abscence abscence;
+
+    // private StatutJustification statutJustification;
 
 }

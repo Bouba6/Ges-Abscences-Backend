@@ -23,4 +23,11 @@ public interface CoursController extends Controller<Cours> {
 
         @GetMapping("/eleve/{id}")
         ResponseEntity<?> findCoursForEleve(@PathVariable String id);
+
+
+         @GetMapping("/Date/{date}")
+        ResponseEntity<?> findCoursInDate(@PathVariable String date);
+
+
+        
 }

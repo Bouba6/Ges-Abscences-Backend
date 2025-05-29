@@ -14,4 +14,6 @@ public interface AbscenceService extends Service<Abscence> {
     Abscence getAbsenceDetails(String id, String coursId);
 
     Abscence updateAbsence(String id, Abscence absence);
+
+    List<Abscence> findByEleveId(String eleveId);
 }

@@ -17,4 +17,7 @@ public interface AbscenceRepository extends MongoRepository<Abscence, String> {
     @Query("{ 'eleve.id': ?0, 'cours.id': ?1 }")
     Abscence findByEleveIdAndCoursId(String eleveId, String coursId);
 
+
+    List<Abscence> findByEleveId(String eleveId);
+
 }

@@ -1,6 +1,10 @@
 package com.gesabsences.gesabsences.data.Services.Impl;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +46,25 @@ public class ICoursService extends IService<Cours, CoursRepository> implements C
     @Override
     public List<Cours> findCoursForEleve(Eleve eleve) {
         return coursRepository.findByClasse(eleve.getClasse());
+    }
+
+    public List<Cours> getCoursForEleveToday(Eleve eleve) {
+        ZoneId zoneId = ZoneOffset.UTC; // Très important !
+        LocalDate today = LocalDate.now(zoneId);
+
+        // Début et fin de la journée en UTC
+        Instant startOfDay = today.atStartOfDay(zoneId).toInstant();
+        Instant endOfDay = today.plusDays(1).atStartOfDay(zoneId).minusNanos(1).toInstant();
+
+        Date startDate = Date.from(startOfDay);
+        Date endDate = Date.from(endOfDay);
+
+        return coursRepository.findByClasseAndDateBetween(eleve.getClasse(), startDate, endDate);
+    }
+
+    @Override
+    public List<Cours> findByDate(Date date) {
+        return coursRepository.findByDate(date);
     }
 
 }
