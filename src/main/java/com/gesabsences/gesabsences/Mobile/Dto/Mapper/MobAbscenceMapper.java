@@ -18,7 +18,7 @@ public interface MobAbscenceMapper {
 
     @Mapping(target = "statutAbscence", source = "statutAbscence")
     @Mapping(target = "typeAbscence", source = "typeAbscence")
-    @Mapping(target = "justificatif.id", source = "justificatifId")
+    // @Mapping(target = "justificatif.id", source = "justificatifId")
     @Mapping(target = "eleve.id", source = "eleveId")
     @Mapping(target = "cours.id", source = "coursId")
     Abscence toEntity(AbscenceRequest abscenceResponse);

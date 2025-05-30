@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:3000")
 public class WebIClasseController implements ClasseController {
 
     private final ClasseService classeService;

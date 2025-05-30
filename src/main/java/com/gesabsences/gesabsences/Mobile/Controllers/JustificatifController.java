@@ -16,7 +16,7 @@ import com.gesabsences.gesabsences.data.Entities.Justification;
 public interface JustificatifController extends Controller<Justification> {
 
     @GetMapping("/eleve/{id}")
-    ResponseEntity<?> findByIdEleve(@RequestParam String idEleve);
+    ResponseEntity<?> findByIdEleve(@PathVariable String id);
 
     @GetMapping("/cours/{id}")
     ResponseEntity<?> findByIdCours(@RequestParam String idCours);

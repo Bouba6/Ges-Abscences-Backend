@@ -2,8 +2,10 @@ package com.gesabsences.gesabsences.utils.mock;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,20 +50,18 @@ public class ClasseMock implements CommandLineRunner {
     private final AnneeRepository anneeScolaireRepository;
     private final InscriptionRepository inscriptionRepository;
 
-    // Predefined data to ensure more structured generation
+    // Données prédéfinies réduites
     private static final List<String> FIRST_NAMES = Arrays.asList(
-            "Mamadou", "Fatou", "Cheikh", "Awa", "Ousmane", "Aminata", "Modou", "Mariama",
-            "Ibrahima", "Ndèye", "Abdoulaye", "Sokhna", "Serigne", "Dieynaba", "Babacar");
+            "Mamadou", "Fatou", "Cheikh", "Awa", "Ousmane", "Aminata");
 
     private static final List<String> LAST_NAMES = Arrays.asList(
-            "Diop", "Ndiaye", "Ba", "Fall", "Sow", "Gueye", "Faye", "Camara", "Sarr",
-            "Diallo", "Sy", "Ndoye");
+            "Diop", "Ndiaye", "Ba", "Fall", "Sow", "Gueye");
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        System.out.println("=== DÉBUT DE LA GÉNÉRATION DES DONNÉES ===");
-
+        System.out.println("=== DÉBUT DE LA GÉNÉRATION DES DONNÉES OPTIMISÉES ===");
+        // clearDatabase();
         // Vérifier si des données existent déjà
         if (absenceRepository.count() > 0) {
             System.out.println("⚠️ Données déjà existantes, génération annulée");
@@ -78,7 +78,7 @@ public class ClasseMock implements CommandLineRunner {
             System.out.println("✅ Modules disponibles : " + modules.size());
 
             // Générer les données
-            generateMockData(modules);
+            generateOptimizedMockData(modules);
 
             // Afficher les résultats
             printFinalResults();
@@ -90,38 +90,58 @@ public class ClasseMock implements CommandLineRunner {
         }
     }
 
+    private void clearDatabase() {
+        // Supprimer les dépendances en premier
+        absenceRepository.deleteAll();
+        justificatifRepository.deleteAll();
+        inscriptionRepository.deleteAll();
+        coursRepository.deleteAll();
+        professeurClasseRepository.deleteAll();
+        professeurModuleRepository.deleteAll();
+
+        // Supprimer les entités principales ensuite
+        eleveRepository.deleteAll();
+        moduleRepository.deleteAll();
+        professeurRepository.deleteAll();
+        classeRepository.deleteAll();
+        niveauRepository.deleteAll();
+        anneeScolaireRepository.deleteAll();
+
+        System.out.println("✅ Base de données nettoyée avec succès.");
+    }
+
     @Transactional
-    private void generateMockData(List<Module> modules) {
-        System.out.println("🚀 Génération des données mockées...");
+    private void generateOptimizedMockData(List<Module> modules) {
+        System.out.println("🚀 Génération des données optimisées...");
         Random random = new Random();
 
         // Phase 1: Créer l'année scolaire active
         AnneeScolaire anneeScolaire = createAnneeScolaire();
         System.out.println("✅ Phase 1 terminée: Année scolaire créée");
 
-        // Phase 2: Créer les niveaux et classes
-        List<Classe> allClasses = createNiveauxAndClasses();
+        // Phase 2: Créer MOINS de niveaux et classes (seulement 2 niveaux)
+        List<Classe> allClasses = createReducedNiveauxAndClasses();
         System.out.println("✅ Phase 2 terminée: " + allClasses.size() + " classes créées");
 
-        // Phase 3: Créer les professeurs
-        List<Professeur> allProfesseurs = createProfesseurs(modules);
+        // Phase 3: Créer MOINS de professeurs
+        List<Professeur> allProfesseurs = createReducedProfesseurs(modules);
         System.out.println("✅ Phase 3 terminée: " + allProfesseurs.size() + " professeurs créés");
 
         // Phase 4: Assigner les professeurs aux classes
         assignProfesseursToClasses(allProfesseurs, allClasses);
         System.out.println("✅ Phase 4 terminée: Professeurs assignés aux classes");
 
-        // Phase 5: Créer les élèves avec inscriptions (MOINS D'ÉLÈVES)
-        createStudentsWithInscriptions(allClasses, anneeScolaire);
+        // Phase 5: Créer MOINS d'élèves avec inscriptions
+        createOptimizedStudentsWithInscriptions(allClasses, anneeScolaire);
         System.out.println("✅ Phase 5 terminée: Élèves créés avec inscriptions");
 
-        // Phase 6: Créer les cours
-        List<Cours> coursCrees = createCourses(allProfesseurs, allClasses, modules);
+        // Phase 6: Créer les cours sur 3 JOURS SEULEMENT (lundi, mardi, mercredi)
+        List<Cours> coursCrees = createOptimizedCourses(allProfesseurs, allClasses, modules);
         System.out.println("✅ Phase 6 terminée: " + coursCrees.size() + " cours créés");
 
-        // Phase 7: Créer les absences si des cours existent
+        // Phase 7: Créer MOINS d'absences
         if (!coursCrees.isEmpty()) {
-            generateAbsences(coursCrees);
+            generateOptimizedAbsences(coursCrees);
             System.out.println("✅ Phase 7 terminée: Absences générées");
         }
     }
@@ -139,14 +159,14 @@ public class ClasseMock implements CommandLineRunner {
         return savedAnneeScolaire;
     }
 
-    private List<Classe> createNiveauxAndClasses() {
-        System.out.println("📚 Création des niveaux et classes...");
+    private List<Classe> createReducedNiveauxAndClasses() {
+        System.out.println("📚 Création des niveaux et classes (RÉDUIT)...");
         List<Classe> allClasses = new ArrayList<>();
-        Random random = new Random();
 
+        // SEULEMENT 2 niveaux au lieu de 4
         List<NiveauState> niveauxStates = Arrays.asList(
-                NiveauState.SIXIEME, NiveauState.CINQUIEME,
-                NiveauState.QUATRIEME, NiveauState.TROISIEME);
+                NiveauState.SIXIEME,
+                NiveauState.CINQUIEME);
 
         for (NiveauState niveauState : niveauxStates) {
             // Créer le niveau
@@ -154,50 +174,47 @@ public class ClasseMock implements CommandLineRunner {
             niveau.setNiveauState(niveauState);
             niveau = niveauRepository.save(niveau);
 
-            // Créer 1-2 classes par niveau (réduit)
-            int nombreClasses = 1 + random.nextInt(2);
-            for (int i = 1; i <= nombreClasses; i++) {
-                Classe classe = new Classe();
-                classe.setNomClasse(niveauState.toString() + " - Classe " + i);
-                classe.setNiveau(niveau);
-                classe.setEffectifs(0); // Sera mis à jour lors de la création des élèves
+            // SEULEMENT 1 classe par niveau
+            Classe classe = new Classe();
+            classe.setNomClasse(niveauState.toString() + " - Classe A");
+            classe.setNiveau(niveau);
+            classe.setEffectifs(0);
 
-                Classe savedClasse = classeRepository.save(classe);
-                allClasses.add(savedClasse);
+            Classe savedClasse = classeRepository.save(classe);
+            allClasses.add(savedClasse);
 
-                System.out.println("   ✓ Classe créée: " + savedClasse.getNomClasse());
-            }
+            System.out.println("   ✓ Classe créée: " + savedClasse.getNomClasse());
         }
 
         return allClasses;
     }
 
-    private List<Professeur> createProfesseurs(List<Module> modules) {
-        System.out.println("👨‍🏫 Création des professeurs...");
+    private List<Professeur> createReducedProfesseurs(List<Module> modules) {
+        System.out.println("👨‍🏫 Création des professeurs (RÉDUIT)...");
         List<Professeur> professeurs = new ArrayList<>();
         Random random = new Random();
 
-        // Créer 6-8 professeurs (réduit)
-        int nombreProfesseurs = 6 + random.nextInt(3);
+        // SEULEMENT 3 professeurs au lieu de 6-8
+        int nombreProfesseurs = 3;
 
         for (int i = 0; i < nombreProfesseurs; i++) {
             try {
                 // Créer le professeur
                 Professeur professeur = new Professeur();
-                professeur.setNom(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
-                professeur.setPrenom(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
+                professeur.setNom(LAST_NAMES.get(i % LAST_NAMES.size()));
+                professeur.setPrenom(FIRST_NAMES.get(i % FIRST_NAMES.size()));
                 professeur.setEmail(professeur.getPrenom().toLowerCase() + "." +
                         professeur.getNom().toLowerCase() + "@ecole.sn");
                 professeur.setDateNaissance(
-                        LocalDate.of(1970 + random.nextInt(25), 1 + random.nextInt(12), 1 + random.nextInt(28)));
-                professeur.setSexe(random.nextBoolean() ? "M" : "F");
-                professeur.setAdresse((10 + random.nextInt(90)) + " Avenue Bourguiba");
+                        LocalDate.of(1975 + i, 1 + random.nextInt(12), 1 + random.nextInt(28)));
+                professeur.setSexe(i % 2 == 0 ? "M" : "F");
+                professeur.setAdresse((10 + i * 10) + " Avenue Bourguiba");
                 professeur.setVille("Dakar");
 
                 // Sauvegarder le professeur
                 Professeur savedProfesseur = professeurRepository.save(professeur);
 
-                // Assigner 1-2 modules au professeur (réduit)
+                // Assigner des modules au professeur
                 assignModulesToProfesseur(savedProfesseur, modules);
 
                 professeurs.add(savedProfesseur);
@@ -215,12 +232,11 @@ public class ClasseMock implements CommandLineRunner {
     private void assignModulesToProfesseur(Professeur professeur, List<Module> modules) {
         Random random = new Random();
 
-        // Mélanger les modules et en prendre 1-2 (réduit)
+        // Assigner 2 modules par professeur pour avoir de la variété
         List<Module> shuffledModules = new ArrayList<>(modules);
         Collections.shuffle(shuffledModules);
 
-        int nombreModules = 1 + random.nextInt(2); // 1 à 2 modules
-        nombreModules = Math.min(nombreModules, modules.size());
+        int nombreModules = Math.min(2, modules.size());
 
         for (int i = 0; i < nombreModules; i++) {
             try {
@@ -244,9 +260,10 @@ public class ClasseMock implements CommandLineRunner {
         }
 
         // Étape 1: Assigner un professeur principal à chaque classe
-        for (Classe classe : classes) {
+        for (int i = 0; i < classes.size(); i++) {
             try {
-                Professeur profPrincipal = professeurs.get(random.nextInt(professeurs.size()));
+                Classe classe = classes.get(i);
+                Professeur profPrincipal = professeurs.get(i % professeurs.size());
                 classe.setProfPrincipal(profPrincipal);
                 classeRepository.save(classe);
 
@@ -257,62 +274,45 @@ public class ClasseMock implements CommandLineRunner {
             }
         }
 
-        // Étape 2: Créer les relations ProfesseurClasse
+        // Étape 2: Créer les relations ProfesseurClasse - CHAQUE PROF ENSEIGNE DANS
+        // TOUTES LES CLASSES
         for (Professeur professeur : professeurs) {
-            try {
-                // Assigner ce professeur à 1-2 classes aléatoires (réduit)
-                List<Classe> shuffledClasses = new ArrayList<>(classes);
-                Collections.shuffle(shuffledClasses);
+            for (Classe classe : classes) {
+                try {
+                    ProfesseurClasse professeurClasse = new ProfesseurClasse();
+                    professeurClasse.setProfesseur(professeur);
+                    professeurClasse.setClasse(classe);
+                    professeurClasseRepository.save(professeurClasse);
 
-                int nombreClassesPourProf = 1 + random.nextInt(2); // 1 à 2 classes par prof
-                nombreClassesPourProf = Math.min(nombreClassesPourProf, classes.size());
-
-                for (int i = 0; i < nombreClassesPourProf; i++) {
-                    Classe classe = shuffledClasses.get(i);
-
-                    // Vérifier si la relation existe déjà
-                    boolean relationExists = professeurClasseRepository
-                            .findByProfesseur(professeur)
-                            .stream()
-                            .anyMatch(pc -> pc.getClasse().getId().equals(classe.getId()));
-
-                    if (!relationExists) {
-                        ProfesseurClasse professeurClasse = new ProfesseurClasse();
-                        professeurClasse.setProfesseur(professeur);
-                        professeurClasse.setClasse(classe);
-                        professeurClasseRepository.save(professeurClasse);
-
-                        System.out.println("   ✓ Relation créée: " + professeur.getPrenom() +
-                                " -> " + classe.getNomClasse());
-                    }
+                    System.out.println("   ✓ Relation créée: " + professeur.getPrenom() +
+                            " -> " + classe.getNomClasse());
+                } catch (Exception e) {
+                    System.err.println("   ❌ Erreur création relations: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                System.err.println("   ❌ Erreur création relations pour " +
-                        professeur.getPrenom() + ": " + e.getMessage());
             }
         }
     }
 
-    private void createStudentsWithInscriptions(List<Classe> classes, AnneeScolaire anneeScolaire) {
-        System.out.println("👨‍🎓 Création des élèves avec inscriptions...");
+    private void createOptimizedStudentsWithInscriptions(List<Classe> classes, AnneeScolaire anneeScolaire) {
+        System.out.println("👨‍🎓 Création des élèves avec inscriptions (OPTIMISÉ)...");
         Random random = new Random();
         int totalEleves = 0;
 
         for (Classe classe : classes) {
             try {
-                // 8-12 élèves par classe (RÉDUIT de 15-25 à 8-12)
-                int nombreEleves = 8 + random.nextInt(5);
+                // SEULEMENT 5 élèves par classe au lieu de 8-12
+                int nombreEleves = 5;
                 List<Eleve> eleves = new ArrayList<>();
                 List<Inscription> inscriptions = new ArrayList<>();
 
                 for (int i = 0; i < nombreEleves; i++) {
                     // Créer l'élève
                     Eleve eleve = new Eleve();
-                    eleve.setNom(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())));
-                    eleve.setPrenom(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())));
-                    eleve.setDateNaissance(LocalDate.now().minusYears(11 + random.nextInt(4)));
-                    eleve.setSexe(random.nextBoolean() ? "M" : "F");
-                    eleve.setAdresse((10 + random.nextInt(90)) + " Rue de Sandaga");
+                    eleve.setNom(LAST_NAMES.get(i % LAST_NAMES.size()));
+                    eleve.setPrenom(FIRST_NAMES.get(i % FIRST_NAMES.size()));
+                    eleve.setDateNaissance(LocalDate.now().minusYears(12 + i));
+                    eleve.setSexe(i % 2 == 0 ? "M" : "F");
+                    eleve.setAdresse((10 + i * 5) + " Rue de Sandaga");
                     eleve.setVille("Dakar");
                     eleve.setEmail(eleve.getPrenom().toLowerCase() + "." +
                             eleve.getNom().toLowerCase() + "@eleve.sn");
@@ -330,7 +330,7 @@ public class ClasseMock implements CommandLineRunner {
                     inscription.setEleve(eleve);
                     inscription.setAnneeScolaire(anneeScolaire);
                     inscription.setClasse(classe);
-                    inscription.setDateInscription(LocalDate.now().minusMonths(random.nextInt(3)));
+                    inscription.setDateInscription(LocalDate.now().minusDays(30));
                     inscription.setEstActive(true);
 
                     inscriptions.add(inscription);
@@ -356,8 +356,9 @@ public class ClasseMock implements CommandLineRunner {
         System.out.println("   ✅ Total élèves créés: " + totalEleves);
     }
 
-    private List<Cours> createCourses(List<Professeur> professeurs, List<Classe> classes, List<Module> modules) {
-        System.out.println("📖 Création des cours...");
+    private List<Cours> createOptimizedCourses(List<Professeur> professeurs, List<Classe> classes,
+            List<Module> modules) {
+        System.out.println("📖 Création des cours (OPTIMISÉ - 3 jours seulement)...");
 
         if (professeurs.isEmpty() || classes.isEmpty() || modules.isEmpty()) {
             System.err.println("❌ Impossible de créer les cours: données manquantes");
@@ -367,37 +368,44 @@ public class ClasseMock implements CommandLineRunner {
         List<Cours> coursList = new ArrayList<>();
         Random random = new Random();
 
-        // Créneaux horaires
+        // Créneaux horaires réduits
         List<LocalTime> timeSlots = Arrays.asList(
-                LocalTime.of(8, 0), LocalTime.of(9, 30), LocalTime.of(11, 0),
-                LocalTime.of(14, 0), LocalTime.of(15, 30));
+                LocalTime.of(8, 0),
+                LocalTime.of(10, 0),
+                LocalTime.of(14, 0));
 
-        // Période: cette semaine (5 jours ouvrables)
-        LocalDate startDate = LocalDate.now().with(DayOfWeek.MONDAY);
-        List<LocalDate> joursOuvrables = new ArrayList<>();
-        for (int jour = 0; jour < 5; jour++) {
-            joursOuvrables.add(startDate.plusDays(jour));
-        }
+        // SEULEMENT 3 JOURS : Lundi, Mardi, Mercredi
+        LocalDate startDate = LocalDate.now().with(DayOfWeek.THURSDAY);
+        List<LocalDate> joursOuvrables = Arrays.asList(
+                startDate, // Lundi
+                startDate.plusDays(1), // Mardi
+                startDate.plusDays(2) // Mercredi
+        );
 
-        // Garantir au moins 1 cours par jour pour chaque classe
+        System.out.println("   📅 Génération sur 3 jours: " + joursOuvrables);
+
+        // Garantir exactement 2 cours par jour pour chaque classe
         for (Classe classe : classes) {
             for (LocalDate jour : joursOuvrables) {
-                try {
-                    CombinaisonCours combinaison = trouverCombinaisonPourClasse(classe, professeurs, modules);
+                // 2 cours par jour par classe
+                for (int coursIndex = 0; coursIndex < 2; coursIndex++) {
+                    try {
+                        CombinaisonCours combinaison = trouverCombinaisonPourClasse(classe, professeurs, modules);
 
-                    if (combinaison != null) {
-                        Cours cours = creerCours(combinaison, jour, timeSlots, random);
-                        if (cours != null) {
-                            coursList.add(cours);
+                        if (combinaison != null) {
+                            Cours cours = creerCoursOptimise(combinaison, jour, timeSlots.get(coursIndex), random);
+                            if (cours != null) {
+                                coursList.add(cours);
+                            }
                         }
+                    } catch (Exception e) {
+                        System.err.println("     ❌ Erreur création cours: " + e.getMessage());
                     }
-                } catch (Exception e) {
-                    System.err.println("     ❌ Erreur création cours: " + e.getMessage());
                 }
             }
         }
 
-        System.out.println("   🎯 TOTAL: " + coursList.size() + " cours générés");
+        System.out.println("   🎯 TOTAL: " + coursList.size() + " cours générés sur 3 jours");
         return coursList;
     }
 
@@ -426,7 +434,8 @@ public class ClasseMock implements CommandLineRunner {
         return new CombinaisonCours(professeur, module, classe);
     }
 
-    private Cours creerCours(CombinaisonCours combinaison, LocalDate jour, List<LocalTime> timeSlots, Random random) {
+    private Cours creerCoursOptimise(CombinaisonCours combinaison, LocalDate jour, LocalTime heureDebut,
+            Random random) {
         try {
             Cours cours = new Cours();
             cours.setProfesseur(combinaison.professeur);
@@ -437,9 +446,12 @@ public class ClasseMock implements CommandLineRunner {
             Date convertedDate = Date.from(jour.atStartOfDay(zoneId).toInstant());
             cours.setDate(convertedDate);
 
-            LocalTime heureDebut = timeSlots.get(random.nextInt(timeSlots.size()));
-            cours.setHeureDebut(heureDebut);
-            cours.setHeureFin(heureDebut.plusHours(1).plusMinutes(30));
+            Date heureDebutDate = Date.from(heureDebut.atDate(jour).atZone(zoneId).toInstant());
+            cours.setHeureDebut(heureDebutDate);
+
+            LocalDateTime heureDebutLdt = heureDebutDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            cours.setHeureFin(
+                    Date.from(heureDebutLdt.plusHours(1).plusMinutes(30).atZone(ZoneId.systemDefault()).toInstant()));
             cours.setNbrHeures(2);
 
             return coursRepository.save(cours);
@@ -462,8 +474,8 @@ public class ClasseMock implements CommandLineRunner {
         }
     }
 
-    private void generateAbsences(List<Cours> coursList) {
-        System.out.println("📋 Génération des absences...");
+    private void generateOptimizedAbsences(List<Cours> coursList) {
+        System.out.println("📋 Génération des absences (OPTIMISÉ)...");
         Random random = new Random();
         List<Abscence> absencesList = new ArrayList<>();
         List<Justification> justificatifs = new ArrayList<>();
@@ -484,8 +496,8 @@ public class ClasseMock implements CommandLineRunner {
 
                 for (Eleve eleve : eleves) {
                     try {
-                        // 10% de chance d'être absent (réduit de 15% à 10%)
-                        if (random.nextDouble() < 0.10) {
+                        // SEULEMENT 5% de chance d'être absent au lieu de 10%
+                        if (random.nextDouble() < 0.05) {
                             Abscence absence = new Abscence();
                             absence.setEleve(eleve);
                             absence.setCours(cours);
@@ -495,8 +507,8 @@ public class ClasseMock implements CommandLineRunner {
                             absencesList.add(absence);
                             totalAbsencesGenerees++;
 
-                            // 25% de chance d'être justifié (réduit de 30% à 25%)
-                            if (random.nextDouble() < 0.25) {
+                            // 20% de chance d'être justifié
+                            if (random.nextDouble() < 0.20) {
                                 absence.setStatutAbscence(StatutAbscence.JUSTIFIER);
 
                                 Justification justificatif = new Justification();
@@ -544,14 +556,12 @@ public class ClasseMock implements CommandLineRunner {
         List<String> justificatifs = Arrays.asList(
                 "Rendez-vous médical",
                 "Maladie",
-                "Problème de transport",
-                "Affaire familiale urgente",
-                "Convocation administrative");
+                "Problème de transport");
         return justificatifs.get(random.nextInt(justificatifs.size()));
     }
 
     private void printFinalResults() {
-        System.out.println("\n=== 📊 RÉSULTATS FINAUX ===");
+        System.out.println("\n=== 📊 RÉSULTATS FINAUX OPTIMISÉS ===");
         try {
             System.out.println("📅 Années scolaires     : " + anneeScolaireRepository.count());
             System.out.println("👨‍🏫 Professeurs créés    : " + professeurRepository.count());
@@ -561,7 +571,7 @@ public class ClasseMock implements CommandLineRunner {
             System.out.println("📝 Inscriptions créées  : " + inscriptionRepository.count());
             System.out.println("📖 Cours créés          : " + coursRepository.count());
             System.out.println("❌ Absences créées      : " + absenceRepository.count());
-            System.out.println("=== ✅ GÉNÉRATION TERMINÉE AVEC SUCCÈS ===");
+            System.out.println("=== ✅ GÉNÉRATION OPTIMISÉE TERMINÉE ===");
         } catch (Exception e) {
             System.err.println("❌ Erreur lors de l'affichage des résultats: " + e.getMessage());
         }

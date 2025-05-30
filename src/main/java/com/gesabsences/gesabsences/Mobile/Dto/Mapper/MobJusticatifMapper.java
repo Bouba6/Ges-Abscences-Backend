@@ -1,5 +1,7 @@
 package com.gesabsences.gesabsences.Mobile.Dto.Mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -23,6 +25,8 @@ public interface MobJusticatifMapper {
     @Mapping(target = "statutJustification", source = "statutJustification")
     @Mapping(target = "abscence.id", source = "abscenceId")
     Justification toEntity(JustifierRequest justificatifResponse);
+
+     List<justificatifResponse> toDto(List<Justification> justificatifs);
 
     // private String justificatif;
 

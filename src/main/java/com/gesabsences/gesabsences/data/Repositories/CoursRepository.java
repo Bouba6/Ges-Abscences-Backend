@@ -26,6 +26,7 @@ public interface CoursRepository extends MongoRepository<Cours, String> {
 
     List<Cours> findByDate(Date date);
 
+    List<Cours> findByDateBetween(Date startDate, Date endDate);
 
     
     // Cours d'un élève pour un professeur spécifique

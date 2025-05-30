@@ -1,5 +1,6 @@
 package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:3000")
 public class WebIJustificatifController implements JustificatifController {
     private final JustificatifService justificatifService;
     private final MobJusticatifMapper justificatifMapper;
@@ -81,8 +83,9 @@ public class WebIJustificatifController implements JustificatifController {
     }
 
     @Override
-    public ResponseEntity<?> findByIdEleve(String idEleve) {
-        return new ResponseEntity<>(justificatifService.findByEleve(idEleve), HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> findByIdEleve(@PathVariable String id) {
+        List<justificatifResponse> response = justificatifMapper.toDto(justificatifService.findByEleve(id));
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, response, "Justificatif"), HttpStatus.OK);
     }
 
     @Override
