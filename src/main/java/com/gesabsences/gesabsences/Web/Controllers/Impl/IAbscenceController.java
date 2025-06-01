@@ -1,67 +1,106 @@
 package com.gesabsences.gesabsences.Web.Controllers.Impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.gesabsences.gesabsences.Web.Controllers.AbscenceContoller;
-import com.gesabsences.gesabsences.Web.Dto.Request.AbscenceRequest;
-import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Services.AbscenceService;
 import com.gesabsences.gesabsences.data.Services.CoursService;
 import com.gesabsences.gesabsences.data.Services.EleveService;
+import com.gesabsences.gesabsences.data.Enum.StatutAbscence;
+import com.gesabsences.gesabsences.Web.Dto.Request.AbscenceRequest;
 import com.gesabsences.gesabsences.Web.Mapper.AbscenceMapper;
+// import com.gesabsences.gesabsences.Web.Response.RestResponse; // Removed because the class does not exist
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
-public class IAbscenceController implements AbscenceContoller {
+@RequestMapping("/api/absences")
+public class IAbscenceController {
 
-    private final AbscenceService abscenceService;
-    private final CoursService coursService;
-    private final EleveService eleveService;
-    private final AbscenceMapper abscenceMapper;
+    @Autowired
+    private AbscenceService abscenceService;
 
-    @Override
+    @Autowired
+    private CoursService coursService;
+
+    @Autowired
+    private EleveService eleveService;
+
+    @Autowired
+    private AbscenceMapper abscenceMapper;
+
+    @GetMapping("/group-by")
+    public ResponseEntity<Map<String, Object>> groupAbsencesByDayAndMatiere(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        List<Abscence> absences = abscenceService.findAbsencesBetweenDates(start, end);
+
+        Map<LocalDate, Map<String, List<Abscence>>> grouped = absences.stream()
+            .collect(Collectors.groupingBy(
+                a -> a.getCours().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                Collectors.groupingBy(a -> a.getCours().getModule().getNom())
+            ));
+
+        return new ResponseEntity<>(Map.of("data", grouped, "message", "Absences groupées"), HttpStatus.OK);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getAbsenceStats(@RequestParam String date) {
+        LocalDate targetDate = LocalDate.parse(date);
+        List<Abscence> absences = abscenceService.findAbsencesByDate(targetDate);
+
+        long total = absences.size();
+        long justifies = absences.stream().filter(a -> a.getStatutAbscence() == StatutAbscence.JUSTIFIE).count();
+        long nonJustifies = absences.stream().filter(a -> a.getStatutAbscence() == StatutAbscence.NON_JUSTIFIE).count();
+
+        Map<String, Object> stats = Map.of(
+            "total", total,
+            "justifies", justifies,
+            "nonJustifies", nonJustifies
+        );
+        return new ResponseEntity<>(Map.of("data", stats, "message", "Statistiques absences"), HttpStatus.OK);
+    }
+
+    // Les méthodes suivantes supposent que tu implémentes une interface, sinon retire les @Override
+
     public ResponseEntity<Map<String, Object>> SelectAll(int page, int size) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'SelectAll'");
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> SelectdById(String id) {
         return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.OK, abscenceMapper.toDto(abscenceService.findById(id)), "Abscence"),
+                Map.of(
+                    "status", HttpStatus.OK.value(),
+                    "data", AbscenceMapper.toDto(abscenceService.findById(id)),
+                    "message", "Abscence"
+                ),
                 HttpStatus.OK);
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> Update(String id, Abscence objet) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Update'");
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> Delete(String id) {
-
         abscenceService.delete(id);
         return ResponseEntity.ok().build();
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> AjouterAbscence(AbscenceRequest abscence) {
-
         Cours cours = coursService.findById(abscence.getCoursId());
         Eleve eleve = eleveService.findById(abscence.getEleveId());
         abscence.setCoursId(cours.getId());
@@ -73,39 +112,4 @@ public class IAbscenceController implements AbscenceContoller {
         abscenceService.create(abscence1);
         return ResponseEntity.ok().build();
     }
-
-    @Override
-    public ResponseEntity<Map<String, Object>> findAbsenceInCours(String id) {
-
-        Cours cours = coursService.findById(id);
-        List<Abscence> abscences = abscenceService.findByCours(cours);
-        return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.OK, abscences.stream().map(abscenceMapper::toDto), "Abscence"),
-                HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Map<String, Object>> getAbsenceDetails(String id, String coursId) {
-
-        Abscence abscence = abscenceService.getAbsenceDetails(id, coursId);
-        return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.OK, abscenceMapper.toDto(abscence), "Abscence"), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Map<String, Object>> Update(String id, AbscenceRequest objet) {
-
-        Cours cours = coursService.findById(objet.getCoursId());
-        Eleve eleve = eleveService.findById(objet.getEleveId());
-        objet.setCoursId(cours.getId());
-        objet.setEleveId(eleve.getId());
-
-        Abscence abscence1 = abscenceMapper.toEntity(objet);
-        abscence1.setEleve(eleve);
-        abscence1.setCours(cours);
-        abscenceService.updateAbsence(id, abscence1);
-        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, abscenceMapper.toDto(abscence1), "Abscence"),
-                HttpStatus.OK);
-    }
-
 }

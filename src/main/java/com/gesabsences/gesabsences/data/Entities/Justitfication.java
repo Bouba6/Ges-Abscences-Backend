@@ -18,4 +18,9 @@ public class Justitfication {
     private Abscence abscence;
 
     private StatutJustification statutJustification;
+
+    public void setJustifiee(Boolean justifiee) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setJustifiee'");
+    }
 }
