@@ -28,7 +28,6 @@ import com.gesabsences.gesabsences.data.Services.ProfesseurService;
 import com.gesabsences.gesabsences.Web.Mapper.ClasseMapper;
 import com.gesabsences.gesabsences.Web.Mapper.EleveMapper;
 
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -135,6 +134,25 @@ public class IClasseController implements ClasseController {
     public ResponseEntity<?> findByNomClasse(String nomClasse, int page, int size) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findByNomClasse'");
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> Create(Classe objet) {
+        try {
+            Classe createdClasse = classeService.create(objet);
+            ClasseResponse response = classeMapper.toDto(createdClasse);
+            return new ResponseEntity<>(RestResponse.response(
+                    HttpStatus.CREATED,
+                    response,
+                    "Classe créée avec succès"),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(RestResponse.response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    null,
+                    "Erreur lors de la création de la classe: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

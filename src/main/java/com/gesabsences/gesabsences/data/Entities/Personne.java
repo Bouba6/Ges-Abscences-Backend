@@ -4,13 +4,13 @@ import java.time.LocalDate;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-@Getter
-@Setter
-@Data
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Personne extends AbstractType {
 
     private String nom;

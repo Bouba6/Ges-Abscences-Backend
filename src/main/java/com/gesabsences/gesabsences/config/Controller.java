@@ -17,26 +17,30 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 public interface Controller<T> {
 
-        @GetMapping("")
-        @ApiResponse(responseCode = "200")
-        ResponseEntity<Map<String, Object>> SelectAll(
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "3") int size);
+    @PostMapping("")
+    @ApiResponse(responseCode = "201")
+    ResponseEntity<Map<String, Object>> Create(@RequestBody T objet);
 
-        @GetMapping("/{id}")
-        @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Donnee trouvé"),
-                        @ApiResponse(responseCode = "404", description = "Donnee non trouvé")
+    @GetMapping("")
+    @ApiResponse(responseCode = "200")
+    ResponseEntity<Map<String, Object>> SelectAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size);
 
-        })
-        ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id);
+    @GetMapping("/{id}")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Donnee trouvé"),
+        @ApiResponse(responseCode = "404", description = "Donnee non trouvé")
 
-        @PutMapping("/{id}")
-        @ApiResponse(responseCode = "200")
-        ResponseEntity<Map<String, Object>> Update(@PathVariable String id, @RequestBody T objet);
+    })
+    ResponseEntity<Map<String, Object>> SelectdById(@PathVariable String id);
 
-        @DeleteMapping("/{id}")
-        @ApiResponse(responseCode = "200")
-        ResponseEntity<Map<String, Object>> Delete(@PathVariable String id);
+    @PutMapping("/{id}")
+    @ApiResponse(responseCode = "200")
+    ResponseEntity<Map<String, Object>> Update(@PathVariable String id, @RequestBody T objet);
+
+    @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "200")
+    ResponseEntity<Map<String, Object>> Delete(@PathVariable String id);
 
 }

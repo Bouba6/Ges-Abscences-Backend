@@ -30,6 +30,25 @@ public class IProfesseurController implements ProfesseurController {
     private final ProfesseurMapper professeurMapper;
 
     @Override
+    public ResponseEntity<Map<String, Object>> Create(Professeur objet) {
+        try {
+            Professeur createdProfesseur = professeurService.create(objet);
+            ProfesseurResponse response = professeurMapper.toDto(createdProfesseur);
+            return new ResponseEntity<>(RestResponse.response(
+                    HttpStatus.CREATED,
+                    response,
+                    "Professeur créé avec succès"),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(RestResponse.response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    null,
+                    "Erreur lors de la création du professeur: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
     public ResponseEntity<Map<String, Object>> SelectAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
