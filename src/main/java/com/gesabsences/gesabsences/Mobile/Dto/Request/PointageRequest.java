@@ -11,6 +11,10 @@ public class PointageRequest {
 
     @Nullable
     private String idCours;
+
+
     private String heurePointage;
+
+    private String idVigile;
 
 }

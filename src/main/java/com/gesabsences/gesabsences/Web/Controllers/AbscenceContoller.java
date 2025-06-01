@@ -32,4 +32,9 @@ public interface AbscenceContoller extends Controller<Abscence> {
     @PutMapping("/update/{id}")
     ResponseEntity<Map<String, Object>> Update(@PathVariable String id, @RequestBody AbscenceRequest objet);
 
+    @GetMapping("/update/{id}")
+    ResponseEntity<Map<String, Object>> getJustificatifInAbscence(@PathVariable String id);
+
+    
+
 }

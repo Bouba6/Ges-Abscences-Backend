@@ -64,21 +64,31 @@ public class ICoursController implements CoursController {
 
     @Override
     public ResponseEntity<?> findCours(String id, String startDate, String endDate) {
+        System.out.println("📌 Requête findCours reçue avec :");
+        System.out.println(" - Classe ID : " + id);
+        System.out.println(" - Date de début (String) : " + startDate);
+        System.out.println(" - Date de fin (String) : " + endDate);
         var classes = classeService.findById(id);
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
+
+        System.out.println("✅ LocalDate Start : " + start);
+        System.out.println("✅ LocalDate End : " + end);
 
         ZoneId zoneId = ZoneId.systemDefault();
 
         Date startDateConverted = Date.from(start.atStartOfDay(zoneId).toInstant());
         Date endDateConverted = Date.from(end.plusDays(1).atStartOfDay(zoneId).toInstant()); // pour inclure tout le
-                                                                                             // jour de fin
+        System.out.println("🕒 Date startDateConverted (java.util.Date) : " + startDateConverted);
+        System.out.println("🕒 Date endDateConverted (java.util.Date) : " + endDateConverted); // jour de fin
 
         List<Cours> cours = coursService.findByClasseAndDateBetween(classes, startDateConverted, endDateConverted);
 
-        // List<Cours> cours = coursService.findByClasseAndDateBetween(classes,
-        // LocalDate.parse(startDate),
-        // LocalDate.parse(endDate));
+        System.out.println("📚 Nombre de cours trouvés : " + cours.size());
+        for (Cours c : cours) {
+            System.out.println(" - Cours ID : " + c.getId() + " | Date : " + c.getDate());
+        }
+
         var response = cours.stream().map(coursMapper::toDto).toList();
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, response, "Cours"), HttpStatus.OK);
     }

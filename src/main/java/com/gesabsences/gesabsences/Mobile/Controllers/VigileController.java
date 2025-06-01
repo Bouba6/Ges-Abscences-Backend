@@ -16,4 +16,7 @@ public interface VigileController extends Controller<Vigile> {
     @GetMapping("/findByLogin")
     ResponseEntity<?> findByLogin(@RequestBody VigileRequest vigile);
 
+
+    
+
 }

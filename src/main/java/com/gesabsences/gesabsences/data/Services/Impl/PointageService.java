@@ -139,6 +139,11 @@ public class PointageService {
                 .collect(Collectors.toList());
     }
 
+
+    public List<Pointage> getPointagesParVigile(String vigileId) {
+        return pointageRepository.findByVigileId(vigileId);
+    }
+
     /**
      * Trouve le cours le plus proche de l'heure d'arrivée pour un élève
      */

@@ -25,21 +25,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gesabsences.gesabsences.Mobile.Controllers.PointageController;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobPointageMapper;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.EleveAvecCoursResponse;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Pointage;
 import com.gesabsences.gesabsences.data.Enum.TypeAbscence;
 import com.gesabsences.gesabsences.data.Services.Impl.PointageService;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.PointageRespoonse;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:4200")
 public class WebIPointageController implements PointageController {
 
     private final PointageService pointageService;
+    private final MobPointageMapper pointageMapper;
 
     @GetMapping("/elevesjour")
     public ResponseEntity<Map<String, Object>> getElevesDuJour() {
@@ -115,6 +118,8 @@ public class WebIPointageController implements PointageController {
                 DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC);
                 String heureFormatee = formatter.format(request.getHeureArrivee().toInstant());
                 pointageRequest.setHeurePointage(heureFormatee);
+                pointageRequest.setIdCours(cours.get().getId());
+                pointageRequest.setIdVigile(request.idVigile);
 
                 pointageService.save(pointageRequest);
                 // pointageService.
@@ -161,19 +166,25 @@ public class WebIPointageController implements PointageController {
     public static class PointageRequest {
         private String eleveId;
         private Date heureArrivee;
+        private String idVigile;
 
         // Constructors
         public PointageRequest() {
         }
 
-        public PointageRequest(String eleveId, Date heureArrivee) {
+        public PointageRequest(String eleveId, Date heureArrivee, String idVigile) {
             this.eleveId = eleveId;
             this.heureArrivee = heureArrivee;
+            this.idVigile = idVigile;
         }
 
         // Getters et Setters
         public String getEleveId() {
             return eleveId;
+        }
+
+        public String getIdVigile() {
+            return idVigile;
         }
 
         public void setEleveId(String eleveId) {
@@ -184,9 +195,20 @@ public class WebIPointageController implements PointageController {
             return heureArrivee;
         }
 
+        public void setIdVigile(String idVigile) {
+            this.idVigile = idVigile;
+        }
+
         public void setHeureArrivee(Date heureArrivee) {
             this.heureArrivee = heureArrivee;
         }
+    }
+
+    @Override
+    public ResponseEntity<?> findByVigileId(String id) {
+        List<Pointage> pointages = pointageService.getPointagesParVigile(id);
+        List<PointageRespoonse> pointageRespoonse = pointages.stream().map(pointageMapper::toDto).toList();
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, pointageRespoonse, "Pointages"), HttpStatus.OK);
     }
 
 }

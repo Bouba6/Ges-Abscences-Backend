@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:4200")
 public class WebIJustificatifController implements JustificatifController {
     private final JustificatifService justificatifService;
     private final MobJusticatifMapper justificatifMapper;

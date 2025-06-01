@@ -8,14 +8,18 @@ GET http://localhost:8080/api/v1/mobile/eleves
 GET http://localhost:8080/api/v1/classes/professeur/68366198d5748c5c10e824cb
 
 ###
+GET http://localhost:8080/api/v1/mobile/pointage/byVigileId/683bad275fe4a742e54c7f8d
+
+###
 
 POST http://localhost:8080/api/v1/mobile/pointage/valider-presence
 Accept: application/json
 Content-Type: application/json
 
 {
-        "eleveId": "6838d7a120e11b6d79c8fb85",
-        "heureArrivee": "2025-05-28T21:00:00.000Z"
+        "eleveId": "683bad425fe4a742e54c7fb9",
+        "heureArrivee": "2025-05-30T07:00:00.000Z",
+        "idVigile": "683bad275fe4a742e54c7f8d"
 }
 
 ###
@@ -33,7 +37,7 @@ GET http://localhost:8080/api/v1/mobile/pointage/elevesjour
 
 ###
 
-GET http://localhost:8080/api/v1/mobile/eleves/6836e7b75bf44a56b8f5f78f
+GET http://localhost:8080/api/v1/mobile/eleves/683b34d621cd3269b4056b4b
 
 ###
 
@@ -41,14 +45,14 @@ GET http://localhost:8080/api/v1/mobile/classes
 
 ###
 
-GET http://localhost:8080/api/v1/cours/eleve/6836e7b75bf44a56b8f5f78e/today
+GET http://localhost:8080/api/v1/cours/eleve/683bad425fe4a742e54c7fb7/today
 
 ###
 GET http://localhost:8080/api/v1/mobile/justifier/eleve/6836e7b75bf44a56b8f5f78e
 
 ###
 
-GET http://localhost:8080/api/v1/mobile/cours/Date/2025-05-28T07:00:00.000+00:00
+GET http://localhost:8080/api/v1/mobile/cours/Date/2025-05-30T07:00:00.000+00:00
 ###
 
 GET http://localhost:8080/api/v1/mobile/cours
@@ -66,7 +70,16 @@ GET http://localhost:8080/api/v1/classes/professeur/6836285320fe0370c39e7f3c
 ###
 
 GET http://localhost:8080/api/v1/cours/classe/6836bead5479bc17875f516c?startDate=2025-03-26&endDate=2025-03-30 
+###
 
+POST http://localhost:8080/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "login": "vigile0",
+    "password": "vigile0"
+}
 
 
 ###
@@ -110,7 +123,43 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/api/v1/mobile/abscences/eleve/6836e7b75bf44a56b8f5f78e
+GET http://localhost:8080/api/v1/mobile/abscences/eleve/683bad425fe4a742e54c7fb9
 
 
+###
+
+PUT http://localhost:8080/api/v1/mobile/abscences/update/683997f114d219133e657141
+Accept: application/json
+Content-Type: application/json
+
+{
+        "statutAbscence": "JUSTIFIER",
+        "eleveId": "683997d214d219133e657125",
+        "justificatifId": "6836e80b5bf44a56b8f5f86d",
+        "coursId": "683997d814d219133e657138",
+        "typeAbscence": "Absent"
+
+}
+
+
+###
+
+POST http://localhost:8080/api/v1/mobile/abscences
+
+     
+###
+Get http://localhost:8080/api/v1/abscences
+
+###
+
+Get http://localhost:8080/api/v1/abscences/update/683b653fcb355527cb77dac2
+
+###
+PUT http://localhost:8080/api/v1/justificatif/abscence/683b6549cb355527cb77dac5
+Accept: application/json
+Content-Type: application/json
+
+{
+        "statutJustificatif": "VALIDE"
+}
 ###

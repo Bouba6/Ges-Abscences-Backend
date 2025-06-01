@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.gesabsences.gesabsences.data.Entities.*;
 import com.gesabsences.gesabsences.data.Enum.NiveauState;
+import com.gesabsences.gesabsences.data.Enum.Role;
 import com.gesabsences.gesabsences.data.Enum.StatutAbscence;
 import com.gesabsences.gesabsences.data.Enum.StatutJustification;
 import com.gesabsences.gesabsences.data.Enum.TypeAbscence;
@@ -49,6 +50,9 @@ public class ClasseMock implements CommandLineRunner {
     private final JustificatifRepository justificatifRepository;
     private final AnneeRepository anneeScolaireRepository;
     private final InscriptionRepository inscriptionRepository;
+    private final UserRepository userRepository;
+    private final VigileRepository vigileRepository;
+    private final AdminRepository adminRepository;
 
     // Données prédéfinies réduites
     private static final List<String> FIRST_NAMES = Arrays.asList(
@@ -98,7 +102,10 @@ public class ClasseMock implements CommandLineRunner {
         coursRepository.deleteAll();
         professeurClasseRepository.deleteAll();
         professeurModuleRepository.deleteAll();
-
+        userRepository.deleteAll();
+        vigileRepository.deleteAll();
+        moduleRepository.deleteAll();
+        adminRepository.deleteAll();
         // Supprimer les entités principales ensuite
         eleveRepository.deleteAll();
         moduleRepository.deleteAll();
@@ -297,15 +304,24 @@ public class ClasseMock implements CommandLineRunner {
         System.out.println("👨‍🎓 Création des élèves avec inscriptions (OPTIMISÉ)...");
         Random random = new Random();
         int totalEleves = 0;
+        int globalCounter = 0;
 
         for (Classe classe : classes) {
             try {
-                // SEULEMENT 5 élèves par classe au lieu de 8-12
                 int nombreEleves = 5;
                 List<Eleve> eleves = new ArrayList<>();
                 List<Inscription> inscriptions = new ArrayList<>();
 
                 for (int i = 0; i < nombreEleves; i++) {
+                    String login = "eleve" + globalCounter;
+
+                    // Vérifie si le login existe déjà
+                    if (userRepository.findByLogin(login).isPresent()) {
+                        System.out.println("Utilisateur avec login " + login + " existe déjà. Ignoré.");
+                        globalCounter++;
+                        continue;
+                    }
+
                     // Créer l'élève
                     Eleve eleve = new Eleve();
                     eleve.setNom(LAST_NAMES.get(i % LAST_NAMES.size()));
@@ -318,13 +334,19 @@ public class ClasseMock implements CommandLineRunner {
                             eleve.getNom().toLowerCase() + "@eleve.sn");
                     eleve.setClasse(classe);
 
+                    User user = new User();
+                    user.setLogin(login);
+                    user.setPassword(login);
+                    user.setRole(Role.STUDENT);
+                    userRepository.save(user);
+                    eleve.setUser(user);
+
+                    globalCounter++;
                     eleves.add(eleve);
                 }
 
-                // Sauvegarder tous les élèves de la classe
                 List<Eleve> savedEleves = eleveRepository.saveAll(eleves);
 
-                // Créer les inscriptions pour chaque élève
                 for (Eleve eleve : savedEleves) {
                     Inscription inscription = new Inscription();
                     inscription.setEleve(eleve);
@@ -332,14 +354,11 @@ public class ClasseMock implements CommandLineRunner {
                     inscription.setClasse(classe);
                     inscription.setDateInscription(LocalDate.now().minusDays(30));
                     inscription.setEstActive(true);
-
                     inscriptions.add(inscription);
                 }
 
-                // Sauvegarder toutes les inscriptions
                 inscriptionRepository.saveAll(inscriptions);
 
-                // Mettre à jour les effectifs de la classe
                 classe.setEffectifs(eleves.size());
                 classeRepository.save(classe);
 
@@ -375,7 +394,7 @@ public class ClasseMock implements CommandLineRunner {
                 LocalTime.of(14, 0));
 
         // SEULEMENT 3 JOURS : Lundi, Mardi, Mercredi
-        LocalDate startDate = LocalDate.now().with(DayOfWeek.THURSDAY);
+        LocalDate startDate = LocalDate.now().with(DayOfWeek.SATURDAY);
         List<LocalDate> joursOuvrables = Arrays.asList(
                 startDate, // Lundi
                 startDate.plusDays(1), // Mardi
@@ -475,12 +494,11 @@ public class ClasseMock implements CommandLineRunner {
     }
 
     private void generateOptimizedAbsences(List<Cours> coursList) {
-        System.out.println("📋 Génération des absences (OPTIMISÉ)...");
+        System.out.println("📋 Génération des absences (OPTIMISÉ - Version Simple)...");
         Random random = new Random();
-        List<Abscence> absencesList = new ArrayList<>();
-        List<Justification> justificatifs = new ArrayList<>();
 
         int totalAbsencesGenerees = 0;
+        int totalJustificatifs = 0;
 
         for (Cours cours : coursList) {
             try {
@@ -496,31 +514,41 @@ public class ClasseMock implements CommandLineRunner {
 
                 for (Eleve eleve : eleves) {
                     try {
-                        // SEULEMENT 5% de chance d'être absent au lieu de 10%
+                        // 5% de chance d'être absent
                         if (random.nextDouble() < 0.05) {
+                            // 1. Créer et sauvegarder l'absence
                             Abscence absence = new Abscence();
                             absence.setEleve(eleve);
                             absence.setCours(cours);
                             absence.setTypeAbscence(random.nextBoolean() ? TypeAbscence.Absent : TypeAbscence.Retard);
-                            absence.setStatutAbscence(StatutAbscence.NON_JUSTIFIER);
-
-                            absencesList.add(absence);
-                            totalAbsencesGenerees++;
 
                             // 20% de chance d'être justifié
-                            if (random.nextDouble() < 0.20) {
-                                absence.setStatutAbscence(StatutAbscence.JUSTIFIER);
+                            boolean estJustifie = random.nextDouble() < 0.75;
+                            absence.setStatutAbscence(
+                                    estJustifie ? StatutAbscence.JUSTIFIER : StatutAbscence.NON_JUSTIFIER);
 
+                            // Sauvegarder l'absence d'abord
+                            Abscence savedAbsence = absenceRepository.save(absence);
+                            totalAbsencesGenerees++;
+
+                            // 2. Si justifié, créer et sauvegarder le justificatif
+                            if (estJustifie) {
                                 Justification justificatif = new Justification();
-                                justificatif.setAbscence(absence);
-                                justificatif.setStatutJustification(getRandomStatutJustification(random));
+                                justificatif.setAbscence(savedAbsence); // Utiliser l'absence sauvegardée avec ID
+                                // justificatif.setStatutJustification(getRandomStatutJustification(random));
                                 justificatif.setJustificatif(getRandomJustificatif(random));
+                                justificatif.setStatutJustification(StatutJustification.EN_ATTENTE);
+                                Justification savedJustificatif = justificatifRepository.save(justificatif);
+                                totalJustificatifs++;
 
-                                justificatifs.add(justificatif);
+                                // 3. Optionnel : mettre à jour la référence dans l'absence
+                                savedAbsence.setJustificatif(savedJustificatif);
+                                absenceRepository.save(savedAbsence);
                             }
                         }
                     } catch (Exception e) {
                         System.err.println("     ❌ Erreur génération absence: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             } catch (Exception e) {
@@ -528,23 +556,10 @@ public class ClasseMock implements CommandLineRunner {
             }
         }
 
-        // Sauvegarder les absences et justificatifs
-        try {
-            if (!absencesList.isEmpty()) {
-                absenceRepository.saveAll(absencesList);
-                System.out.println("   ✅ " + absencesList.size() + " absences sauvegardées");
-
-                if (!justificatifs.isEmpty()) {
-                    justificatifRepository.saveAll(justificatifs);
-                    System.out.println("   ✅ " + justificatifs.size() + " justificatifs sauvegardés");
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("   ❌ ERREUR lors de la sauvegarde: " + e.getMessage());
-            throw new RuntimeException("Échec de la sauvegarde des absences", e);
-        }
-
-        System.out.println("   📊 Résumé: " + totalAbsencesGenerees + " absences générées");
+        System.out.println("   ✅ " + totalAbsencesGenerees + " absences sauvegardées");
+        System.out.println("   ✅ " + totalJustificatifs + " justificatifs sauvegardés");
+        System.out.println("   📊 Résumé: " + totalAbsencesGenerees + " absences générées (" + totalJustificatifs
+                + " justifiées)");
     }
 
     private StatutJustification getRandomStatutJustification(Random random) {
