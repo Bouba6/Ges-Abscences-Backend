@@ -9,5 +9,6 @@ public class AbsenceResponse {
     private String eleveId;
     private String coursId;
     private String statutAbscence;
+    private String statutjustificatif;
 
 }

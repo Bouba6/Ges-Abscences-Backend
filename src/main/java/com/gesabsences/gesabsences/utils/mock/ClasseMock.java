@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +54,7 @@ public class ClasseMock implements CommandLineRunner {
     private final UserRepository userRepository;
     private final VigileRepository vigileRepository;
     private final AdminRepository adminRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     // Données prédéfinies réduites
     private static final List<String> FIRST_NAMES = Arrays.asList(
@@ -336,7 +338,7 @@ public class ClasseMock implements CommandLineRunner {
 
                     User user = new User();
                     user.setLogin(login);
-                    user.setPassword(login);
+                    user.setPassword(passwordEncoder.encode(login));
                     user.setRole(Role.STUDENT);
                     userRepository.save(user);
                     eleve.setUser(user);
@@ -394,7 +396,7 @@ public class ClasseMock implements CommandLineRunner {
                 LocalTime.of(14, 0));
 
         // SEULEMENT 3 JOURS : Lundi, Mardi, Mercredi
-        LocalDate startDate = LocalDate.now().with(DayOfWeek.SATURDAY);
+        LocalDate startDate = LocalDate.now().with(DayOfWeek.MONDAY);
         List<LocalDate> joursOuvrables = Arrays.asList(
                 startDate, // Lundi
                 startDate.plusDays(1), // Mardi
@@ -515,7 +517,7 @@ public class ClasseMock implements CommandLineRunner {
                 for (Eleve eleve : eleves) {
                     try {
                         // 5% de chance d'être absent
-                        if (random.nextDouble() < 0.05) {
+                        if (random.nextDouble() < 0.1) {
                             // 1. Créer et sauvegarder l'absence
                             Abscence absence = new Abscence();
                             absence.setEleve(eleve);
@@ -523,7 +525,7 @@ public class ClasseMock implements CommandLineRunner {
                             absence.setTypeAbscence(random.nextBoolean() ? TypeAbscence.Absent : TypeAbscence.Retard);
 
                             // 20% de chance d'être justifié
-                            boolean estJustifie = random.nextDouble() < 0.75;
+                            boolean estJustifie = random.nextDouble() < 0.50;
                             absence.setStatutAbscence(
                                     estJustifie ? StatutAbscence.JUSTIFIER : StatutAbscence.NON_JUSTIFIER);
 

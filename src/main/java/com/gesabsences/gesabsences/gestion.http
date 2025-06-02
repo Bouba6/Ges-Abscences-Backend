@@ -17,9 +17,9 @@ Accept: application/json
 Content-Type: application/json
 
 {
-        "eleveId": "683bad425fe4a742e54c7fb9",
-        "heureArrivee": "2025-05-30T07:00:00.000Z",
-        "idVigile": "683bad275fe4a742e54c7f8d"
+        "eleveId": "683dafd5827bef35f1e72a19",
+        "heureArrivee": "2025-06-02T15:00:00.000Z",
+        "idVigile": "683dafc9827bef35f1e729ef"
 }
 
 ###
@@ -45,7 +45,7 @@ GET http://localhost:8080/api/v1/mobile/classes
 
 ###
 
-GET http://localhost:8080/api/v1/cours/eleve/683bad425fe4a742e54c7fb7/today
+GET http://localhost:8080/api/v1/cours/eleve/683d74bd827bef35f1e72617/today
 
 ###
 GET http://localhost:8080/api/v1/mobile/justifier/eleve/6836e7b75bf44a56b8f5f78e
@@ -77,8 +77,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "login": "vigile0",
-    "password": "vigile0"
+    "login": "eleve0",
+    "password": "eleve0"
 }
 
 
@@ -124,7 +124,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/api/v1/mobile/abscences/eleve/683bad435fe4a742e54c7fc8
+GET http://localhost:8080/api/v1/mobile/abscences/eleve/683d74bd827bef35f1e7261a
 
 
 ###
@@ -164,3 +164,11 @@ Content-Type: application/json
         "statutJustificatif": "VALIDE"
 }
 ###
+
+GET http://localhost:8080/api/v1/mobile/eleves/user/683d74bb827bef35f1e72612
+
+###
+
+
+
+GET http://localhost:8080/api/v1/mobile/vigiles/user/683d74ac827bef35f1e725eb

@@ -2,6 +2,7 @@ package com.gesabsences.gesabsences.Mobile.Controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +17,7 @@ public interface VigileController extends Controller<Vigile> {
     @GetMapping("/findByLogin")
     ResponseEntity<?> findByLogin(@RequestBody VigileRequest vigile);
 
-
-    
+    @GetMapping("/user/{id}")
+    ResponseEntity<?> findByUserId(@PathVariable String id);
 
 }

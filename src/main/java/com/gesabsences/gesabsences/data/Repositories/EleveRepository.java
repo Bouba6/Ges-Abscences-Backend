@@ -2,6 +2,7 @@ package com.gesabsences.gesabsences.data.Repositories;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import com.gesabsences.gesabsences.data.Entities.Eleve;
 
 public interface EleveRepository extends MongoRepository<Eleve, String> {
 
+    Optional<Eleve> findByUserId(String userId);
+    
     Page<Eleve> findByClasse(Classe classe, Pageable pageable);
 
     List<Eleve> findByClasse(Classe classe);

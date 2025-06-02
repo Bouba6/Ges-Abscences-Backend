@@ -15,6 +15,7 @@ import com.gesabsences.gesabsences.Mobile.Controllers.EleveController;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.EleveResponse;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
+import com.gesabsences.gesabsences.data.Repositories.EleveRepository;
 import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobEleveMapper;
 
@@ -27,6 +28,7 @@ public class WebIEleveController implements EleveController {
 
     private final EleveService eleveService;
     private final MobEleveMapper eleveMapper;
+    private final EleveRepository eleveRepository;
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll(
@@ -64,6 +66,18 @@ public class WebIEleveController implements EleveController {
     public ResponseEntity<Map<String, Object>> Delete(String id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Delete'");
+    }
+
+    @Override
+    public ResponseEntity<?> findByUserId(String id) {
+     
+        Eleve eleve= eleveRepository.findByUserId(id).orElse(null);
+        if (eleve == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,
+                eleveMapper.toDto(eleve), "Eleve"), HttpStatus.OK);
     }
 
 }

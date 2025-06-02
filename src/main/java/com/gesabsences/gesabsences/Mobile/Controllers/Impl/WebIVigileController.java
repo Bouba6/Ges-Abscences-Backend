@@ -2,13 +2,17 @@ package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gesabsences.gesabsences.Mobile.Controllers.VigileController;
+import com.gesabsences.gesabsences.Mobile.Dto.Mapper.MobVigileMapper;
 import com.gesabsences.gesabsences.Mobile.Dto.Request.VigileRequest;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Vigile;
+import com.gesabsences.gesabsences.data.Repositories.VigileRepository;
 import com.gesabsences.gesabsences.data.Services.VigileService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class WebIVigileController implements VigileController {
 
     private final VigileService vigileService;
+    private final MobVigileMapper vigileMapper;
+    private final VigileRepository vigileRepository;
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectAll(int page, int size) {
@@ -58,6 +64,17 @@ public class WebIVigileController implements VigileController {
             return ResponseEntity.notFound().build();
         }
 
+    }
+
+    @Override
+    public ResponseEntity<?> findByUserId(String id) {
+      
+        Vigile vigile = vigileRepository.findByUserId(id).orElse(null);
+        if (vigile == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,
+                vigileMapper.toDto(vigile), "Vigile"), HttpStatus.OK);
     }
 
 }
