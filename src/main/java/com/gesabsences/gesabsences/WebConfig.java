@@ -12,7 +12,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // Permet à ton frontend Angular d'accéder à ton backend
         registry.addMapping("/**") // Applique les règles à toutes les requêtes
-                .allowedOrigins("http://localhost:3000")
                 .allowedOrigins("https://gesabsences-front.onrender.com") // L'URL de ton frontend Angular
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // Méthodes autorisées
                 .allowedHeaders("*") // Autoriser tous les headers
