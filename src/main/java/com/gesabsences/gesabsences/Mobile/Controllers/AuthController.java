@@ -82,13 +82,12 @@ public class AuthController {
     private void authenticate(String username, String password) throws Exception {
         try {
             System.out.println("🔐 Création du token d'authentification...");
-            UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(username, password);
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password);
             System.out.println("🔍 Token créé, tentative d'authentification via AuthenticationManager...");
-            
+
             authenticationManager.authenticate(authToken);
             System.out.println("✅ AuthenticationManager a validé l'authentification");
-            
+
         } catch (DisabledException e) {
             System.out.println("❌ Compte désactivé");
             throw new Exception("USER_DISABLED", e);

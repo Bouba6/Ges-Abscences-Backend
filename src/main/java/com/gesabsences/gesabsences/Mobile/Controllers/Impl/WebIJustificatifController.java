@@ -21,7 +21,10 @@ import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
 import com.gesabsences.gesabsences.data.Entities.Justification;
+import com.gesabsences.gesabsences.data.Enum.StatutAbscence;
 import com.gesabsences.gesabsences.data.Enum.StatutJustification;
+import com.gesabsences.gesabsences.data.Repositories.AbscenceRepository;
+import com.gesabsences.gesabsences.data.Services.AbscenceService;
 import com.gesabsences.gesabsences.data.Services.CoursService;
 import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.data.Services.JustificatifService;
@@ -38,6 +41,8 @@ public class WebIJustificatifController implements JustificatifController {
     private final MobJusticatifMapper justificatifMapper;
     private final EleveService eleveService;
     private final CoursService coursService;
+    private final AbscenceService abscenceService;
+    private final AbscenceRepository absenceRepository;
 
     /************* ✨ Windsurf Command ⭐ *************/
     /**
@@ -97,7 +102,12 @@ public class WebIJustificatifController implements JustificatifController {
     @Override
     public ResponseEntity<?> create(JustifierRequest justifierRequest) {
         Justification justification = justificatifMapper.toEntity(justifierRequest);
-        return new ResponseEntity<>(justificatifService.create(justification), HttpStatus.OK);
+        Justification createdJustification = justificatifService.create(justification);
+        Abscence abscence = abscenceService.findById(createdJustification.getAbscence().getId());
+        abscence.setJustificatif(createdJustification);
+        abscence.setStatutAbscence(StatutAbscence.JUSTIFIER);
+        absenceRepository.save(abscence);
+        return new ResponseEntity<>(createdJustification, HttpStatus.OK);
     }
 
     // private String justificatif;

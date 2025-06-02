@@ -117,13 +117,14 @@ Content-Type: application/json
 {
         "justificatif": "je suis dead",
         "statutJustification": "EN_ATTENTE",
-        "abscenceId": "6836e80b5bf44a56b8f5f86d"
+        "abscenceId": "6836e80b5bf44a56b8f5f86d",
+        "imageUrl": "https://i.pinimg.com/564x/00/9c/0b/009c0b8e2b4f9b4b4b4b4b4b4b4b4b4b.jpg"       
 }
 
 
 ###
 
-GET http://localhost:8080/api/v1/mobile/abscences/eleve/683bad425fe4a742e54c7fb9
+GET http://localhost:8080/api/v1/mobile/abscences/eleve/683bad435fe4a742e54c7fc8
 
 
 ###

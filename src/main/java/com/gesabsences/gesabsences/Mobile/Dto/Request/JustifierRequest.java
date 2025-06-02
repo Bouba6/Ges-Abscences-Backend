@@ -1,5 +1,7 @@
 package com.gesabsences.gesabsences.Mobile.Dto.Request;
 
+import com.mongodb.lang.Nullable;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +16,9 @@ public class JustifierRequest {
     private String statutJustification;
 
     private String abscenceId;
+
+    @Nullable
+    private String imageUrl;
 
 }
 

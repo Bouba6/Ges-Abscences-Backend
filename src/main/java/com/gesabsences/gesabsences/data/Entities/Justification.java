@@ -19,4 +19,6 @@ public class Justification extends AbstractType {
     private Abscence abscence;
 
     private StatutJustification statutJustification;
+
+    private String imageUrl;
 }
