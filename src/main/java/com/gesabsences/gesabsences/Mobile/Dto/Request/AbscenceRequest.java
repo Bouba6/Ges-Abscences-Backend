@@ -14,10 +14,13 @@ public class AbscenceRequest {
     private String eleveId;
 
     @Nullable
-    private String motif;
+    private String justificatifId;
 
     @Nullable
-    private Boolean justifiee;
+    private String typeAbscence;
+
+    @Nullable
+    private String statutAbscence;
 
     @Nullable
     private String coursId;

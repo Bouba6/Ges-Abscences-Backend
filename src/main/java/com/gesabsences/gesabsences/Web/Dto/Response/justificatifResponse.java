@@ -9,8 +9,10 @@ import lombok.Data;
 
 @Data
 public class justificatifResponse {
-    
 
+    private String id;
+    private String justificatif;
+    private String abscenceId;
     private String statutJustification;
 
     private String typeAbscence;
@@ -21,7 +23,4 @@ public class justificatifResponse {
 
     private String statutAbscence;
 
-
 }
-
-

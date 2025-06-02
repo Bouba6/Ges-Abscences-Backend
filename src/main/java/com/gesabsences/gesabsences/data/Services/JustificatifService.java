@@ -1,13 +1,14 @@
 package com.gesabsences.gesabsences.data.Services;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.List;
 
-import com.gesabsences.gesabsences.data.Entities.Justitfication;
+import com.gesabsences.gesabsences.config.Service;
+import com.gesabsences.gesabsences.data.Entities.Eleve;
+import com.gesabsences.gesabsences.data.Entities.Justification;
 
-public interface JustificatifService {
-    // autres méthodes...
-    Justitfication justifierAbsence(String absenceId, Justitfication justificatif);
+public interface JustificatifService extends Service<Justification> {
 
-    Page<Justitfication> findAll(Pageable pageable);
+    List<Justification> findByEleve(String eleveId);
+
+    Justification create(Justification justificatif);
 }

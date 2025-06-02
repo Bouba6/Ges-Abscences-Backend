@@ -6,8 +6,9 @@ import lombok.Data;
 public class AbsenceResponse {
 
     private String id;
-    private String nomEleve;
-    private String nomCours;
+    private String eleveId;
+    private String coursId;
     private String statutAbscence;
+    private String statutjustificatif;
 
 }

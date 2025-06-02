@@ -12,4 +12,13 @@ public interface AbscenceRepository extends MongoRepository<Abscence, String> {
     List<Abscence> findByCours_Date(Date date);
     Abscence findByEleveIdAndCoursId(String id, String coursId);
     List<Abscence> findByCours(Cours cours);
+
+    // boolean removeEleveFromAbsence(Long eleveId, Long coursId);
+
+    @Query("{ 'eleve.id': ?0, 'cours.id': ?1 }")
+    Abscence findByEleveIdAndCoursId(String eleveId, String coursId);
+
+
+    List<Abscence> findByEleveId(String eleveId);
+
 }

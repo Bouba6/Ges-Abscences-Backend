@@ -54,37 +54,13 @@ public class IAbscenceService implements AbscenceService {
         Abscence abscence1 = abscenceRepository.findById(id).get();
         // abscence1.setJustifiee(abscence.getJustifiee());
         // abscence1.setMotif(abscence.getMotif());
-        return abscenceRepository.save(abscence1);
+        
+        return absenceRepository.save(abscence1);
     }
 
     @Override
-    public Abscence create(Abscence object) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
-    }
-
-    @Override
-    public boolean delete(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
-    public Abscence findById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
-
-    @Override
-    public List<Abscence> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
-
-    @Override
-    public Page<Abscence> findAll(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    public List<Abscence> findByEleveId(String eleveId) {
+        return absenceRepository.findByEleveId(eleveId);
     }
 
 }

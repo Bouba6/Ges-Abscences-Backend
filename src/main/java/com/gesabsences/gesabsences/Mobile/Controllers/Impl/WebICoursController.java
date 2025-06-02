@@ -1,5 +1,6 @@
 package com.gesabsences.gesabsences.Mobile.Controllers.Impl;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gesabsences.gesabsences.Mobile.Controllers.CoursController;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.CoursResponse;
 import com.gesabsences.gesabsences.Mobile.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Entities.Eleve;
@@ -101,8 +103,19 @@ public class WebICoursController implements CoursController {
         // var response = cours.stream().map(coursMapper::toDto).toList();
 
         List<Cours> cours = coursService.findCoursForEleve(eleve);
-        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, cours, "Cours"), HttpStatus.OK);
 
+        List<CoursResponse> Courses = cours.stream().map(coursMapper::toDto).toList();
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, Courses, "Cours"), HttpStatus.OK);
+
+    }
+
+    @Override
+    public ResponseEntity<?> findCoursInDate(String date) {
+        Instant instant = Instant.parse(date); // Si c’est bien ISO 8601
+        Date parsedDate = Date.from(instant);
+        List<Cours> cours = coursService.findByDate(parsedDate);
+        var response = cours.stream().map(coursMapper::toDto).toList();
+        return new ResponseEntity<>(RestResponse.response(HttpStatus.OK, response, "Cours"), HttpStatus.OK);
     }
 
 }
