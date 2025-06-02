@@ -1,28 +1,41 @@
 package com.gesabsences.gesabsences.data.Services.Impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import com.gesabsences.gesabsences.config.Impl.IService;
 import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Repositories.AbscenceRepository;
 import com.gesabsences.gesabsences.data.Services.AbscenceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 
 @Service
-public class IAbscenceService extends IService<Abscence, AbscenceRepository> implements AbscenceService {
+public class IAbscenceService implements AbscenceService {
 
-    private final AbscenceRepository absenceRepository;
+    @Autowired
+    private AbscenceRepository abscenceRepository;
 
-    public IAbscenceService(AbscenceRepository repository) {
-        super(repository);
-        this.absenceRepository = repository;
+    @Override
+    public List<Abscence> findAbsencesBetweenDates(LocalDate start, LocalDate end) {
+        Date startDate = Date.from(start.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endDate = Date.from(end.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return abscenceRepository.findByCours_DateBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Abscence> findAbsencesByDate(LocalDate date) {
+        Date d = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return abscenceRepository.findByCours_Date(d);
     }
 
     @Override
     public List<Abscence> findByCours(Cours cours) {
-        return absenceRepository.findByCours(cours);
+        return abscenceRepository.findByCours(cours);
     }
 
     // @Override
@@ -33,12 +46,12 @@ public class IAbscenceService extends IService<Abscence, AbscenceRepository> imp
     @Override
     public Abscence getAbsenceDetails(String id, String coursId) {
 
-        return absenceRepository.findByEleveIdAndCoursId(id, coursId);
+        return abscenceRepository.findByEleveIdAndCoursId(id, coursId);
     }
 
     @Override
     public Abscence updateAbsence(String id, Abscence abscence) {
-        Abscence abscence1 = absenceRepository.findById(id).get();
+        Abscence abscence1 = abscenceRepository.findById(id).get();
         // abscence1.setJustifiee(abscence.getJustifiee());
         // abscence1.setMotif(abscence.getMotif());
         

@@ -26,15 +26,25 @@ import com.gesabsences.gesabsences.data.Entities.Justification;
 import com.gesabsences.gesabsences.data.Services.AbscenceService;
 import com.gesabsences.gesabsences.data.Services.CoursService;
 import com.gesabsences.gesabsences.data.Services.EleveService;
+import com.gesabsences.gesabsences.data.Enum.StatutAbscence;
+import com.gesabsences.gesabsences.Web.Dto.Request.AbscenceRequest;
 import com.gesabsences.gesabsences.Web.Mapper.AbscenceMapper;
 import com.gesabsences.gesabsences.Web.Mapper.JusticatifMapper;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
-public class IAbscenceController implements AbscenceContoller {
+@RequestMapping("/api/absences")
+public class IAbscenceController {
 
     private final AbscenceService abscenceService;
     private final CoursService coursService;
@@ -58,29 +68,27 @@ public class IAbscenceController implements AbscenceContoller {
 
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> SelectdById(String id) {
         return new ResponseEntity<>(
-                RestResponse.response(HttpStatus.OK, abscenceMapper.toDto(abscenceService.findById(id)), "Abscence"),
+                Map.of(
+                    "status", HttpStatus.OK.value(),
+                    "data", AbscenceMapper.toDto(abscenceService.findById(id)),
+                    "message", "Abscence"
+                ),
                 HttpStatus.OK);
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> Update(String id, Abscence objet) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Update'");
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> Delete(String id) {
-
         abscenceService.delete(id);
         return ResponseEntity.ok().build();
     }
 
-    @Override
     public ResponseEntity<Map<String, Object>> AjouterAbscence(AbscenceRequest abscence) {
-
         Cours cours = coursService.findById(abscence.getCoursId());
         Eleve eleve = eleveService.findById(abscence.getEleveId());
         abscence.setCoursId(cours.getId());
