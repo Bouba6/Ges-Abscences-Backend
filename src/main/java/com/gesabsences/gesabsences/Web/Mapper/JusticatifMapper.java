@@ -19,6 +19,7 @@ public interface JusticatifMapper {
     @Mapping(target = "typeAbscence", source = "justificatif.abscence.typeAbscence")
     @Mapping(target = "abscenceId", source = "justificatif.abscence.id")
     @Mapping(target = "justificatif", source = "justificatif.justificatif")
+    @Mapping(target = "imgUrl", source = "justificatif.imageUrl")
     justificatifResponse toDto(Justification justificatif);
 
     @Mapping(target = "justificatif", source = "statutJustificatif")

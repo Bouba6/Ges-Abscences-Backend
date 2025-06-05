@@ -22,5 +22,6 @@ public class justificatifResponse {
     private String nomCours;
 
     private String statutAbscence;
+    private String imgUrl;
 
 }
