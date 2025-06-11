@@ -1,5 +1,7 @@
 package com.gesabsences.gesabsences.Mobile.Dto.Request;
 
+import java.util.List;
+
 import com.mongodb.lang.Nullable;
 
 import lombok.Data;
@@ -18,7 +20,6 @@ public class JustifierRequest {
     private String abscenceId;
 
     @Nullable
-    private String imageUrl;
+    private List<String> imageUrl;
 
 }
-

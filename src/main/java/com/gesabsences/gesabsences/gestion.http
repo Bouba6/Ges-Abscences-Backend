@@ -115,10 +115,13 @@ Accept: application/json
 Content-Type: application/json
 
 {
+        
         "justificatif": "je suis dead",
         "statutJustification": "EN_ATTENTE",
-        "abscenceId": "6836e80b5bf44a56b8f5f86d",
-        "imageUrl": "https://i.pinimg.com/564x/00/9c/0b/009c0b8e2b4f9b4b4b4b4b4b4b4b4b4b.jpg"       
+        "abscenceId": "683daff2827bef35f1e72a40",
+        "imageUrl": ["https://i.pinimg.com/564x/00/9c/0b/009c0b8e2b4f9b4b4b4b4b4b4b4b4b4b.jpg",
+        "https://i.pinimg.com/564x/00/9c/0b/009c0b8e2b4f9b4b4b4b4b4b4b4b4b4b.jpg"
+        ]
 }
 
 
@@ -138,9 +141,7 @@ Content-Type: application/json
         "eleveId": "683997d214d219133e657125",
         "justificatifId": "6836e80b5bf44a56b8f5f86d",
         "coursId": "683997d814d219133e657138",
-        "typeAbscence": "Absent"
-        
-
+        "typeAbscence": "Absent"        
 }
 
 
