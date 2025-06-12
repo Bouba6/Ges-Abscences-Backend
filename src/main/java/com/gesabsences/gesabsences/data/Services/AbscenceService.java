@@ -1,11 +1,11 @@
 package com.gesabsences.gesabsences.data.Services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.gesabsences.gesabsences.config.Service;
 import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
-import com.gesabsences.gesabsences.data.Entities.Professeur;
 
 public interface AbscenceService extends Service<Abscence> {
 

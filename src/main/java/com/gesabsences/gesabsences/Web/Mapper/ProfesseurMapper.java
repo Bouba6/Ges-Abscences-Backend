@@ -1,6 +1,5 @@
 package com.gesabsences.gesabsences.Web.Mapper;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,7 +24,7 @@ public interface ProfesseurMapper {
     @Mapping(target = "coef", source = "module.coef")
     ModuleResponse toDto(ProfesseurModule professeurModule);
 
-    // @Mapping(target = "nomProf", source = "professeur.nom")
+    @Mapping(target = "nomProf", source = "professeur.nom")
     @Mapping(target = "classes", source = "classe")
     ProfesseurResponseClasse toDto(ProfesseurClasse professeurClasse);
 
