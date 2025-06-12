@@ -37,10 +37,10 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 public class WebIJustificatifController implements JustificatifController {
+
+    
     private final JustificatifService justificatifService;
     private final MobJusticatifMapper justificatifMapper;
-    private final EleveService eleveService;
-    private final CoursService coursService;
     private final AbscenceService abscenceService;
     private final AbscenceRepository absenceRepository;
 
@@ -101,6 +101,7 @@ public class WebIJustificatifController implements JustificatifController {
 
     @Override
     public ResponseEntity<?> create(JustifierRequest justifierRequest) {
+
         Justification justification = justificatifMapper.toEntity(justifierRequest);
         Justification createdJustification = justificatifService.create(justification);
         Abscence abscence = abscenceService.findById(createdJustification.getAbscence().getId());
@@ -108,6 +109,7 @@ public class WebIJustificatifController implements JustificatifController {
         abscence.setStatutAbscence(StatutAbscence.JUSTIFIER);
         absenceRepository.save(abscence);
         return new ResponseEntity<>(createdJustification, HttpStatus.OK);
+
     }
 
     // private String justificatif;

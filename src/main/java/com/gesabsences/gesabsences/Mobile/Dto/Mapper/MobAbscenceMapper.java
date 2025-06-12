@@ -27,6 +27,7 @@ public interface MobAbscenceMapper {
     @Mapping(target = "coursId", source = "cours.id")
     @Mapping(target = "statutAbscence", source = "statutAbscence")
     @Mapping(target = "statutjustificatif", source = "justificatif.statutJustification")
+    // @Mapping(target="imgUrl", source = "justificatif.imageUrl")
     AbsenceResponse toDto(Abscence abscence);
 
 }

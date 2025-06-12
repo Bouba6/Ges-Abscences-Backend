@@ -10,5 +10,6 @@ public class AbsenceResponse {
     private String coursId;
     private String statutAbscence;
     private String statutjustificatif;
+    private String imgUrl;
 
 }

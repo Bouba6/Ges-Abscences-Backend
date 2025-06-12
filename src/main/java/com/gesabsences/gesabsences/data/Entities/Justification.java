@@ -1,5 +1,7 @@
 package com.gesabsences.gesabsences.data.Entities;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,5 +22,5 @@ public class Justification extends AbstractType {
 
     private StatutJustification statutJustification;
 
-    private String imageUrl;
+    private List<String> imageUrl;
 }

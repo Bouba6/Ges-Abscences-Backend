@@ -396,7 +396,7 @@ public class ClasseMock implements CommandLineRunner {
                 LocalTime.of(14, 0));
 
         // SEULEMENT 3 JOURS : Lundi, Mardi, Mercredi
-        LocalDate startDate = LocalDate.now().with(DayOfWeek.MONDAY);
+        LocalDate startDate = LocalDate.now().with(DayOfWeek.THURSDAY);
         List<LocalDate> joursOuvrables = Arrays.asList(
                 startDate, // Lundi
                 startDate.plusDays(1), // Mardi
