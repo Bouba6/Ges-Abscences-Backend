@@ -29,6 +29,7 @@ public interface AbscenceMapper {
     @Mapping(target="typeAbscence",source="typeAbscence")
     @Mapping(target="statutAbscence",source="statutAbscence")
     @Mapping(target = "statutJustificatif", source = "justificatif.statutJustification")
+    @Mapping(target = "nomEleve", source = "eleve.nom")
     AbsenceResponse toDto(Abscence abscence);
 
 }

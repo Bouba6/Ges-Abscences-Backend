@@ -11,5 +11,6 @@ public class AbsenceResponse {
     private String nomCours;
     private String typeAbscence;
     private String statutAbscence;
+    private String nomEleve;
 
 }
