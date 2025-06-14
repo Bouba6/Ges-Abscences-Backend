@@ -137,4 +137,29 @@ public class IAbscenceController implements AbscenceContoller {
                 RestResponse.response(HttpStatus.OK, justicatifMapper.toDto(justification), "Justificatif"), HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<Map<String, Object>> SelectAll(int page, int size, String statutAbscence) {
+        Pageable pageable = PageRequest.of(page, size);
+
+    Page<Abscence> abscences;
+
+    if (statutAbscence != null && !statutAbscence.isEmpty()) {
+        abscences = abscenceService.findByStatutAbscence(statutAbscence, pageable);
+    } else {
+        abscences = abscenceService.findAll(pageable);
+    }
+
+    Page<AbsenceResponse> abscenceResponse = abscences.map(abscenceMapper::toDto);
+
+    return new ResponseEntity<>(RestResponse.responsePaginate(
+            HttpStatus.OK,
+            abscenceResponse.getContent(),
+            abscenceResponse.getNumber(),
+            abscenceResponse.getTotalPages(),
+            abscenceResponse.getTotalElements(),
+            abscenceResponse.isFirst(),
+            abscenceResponse.isLast(),
+            "Abscence"), HttpStatus.OK);
+    }
+
 }

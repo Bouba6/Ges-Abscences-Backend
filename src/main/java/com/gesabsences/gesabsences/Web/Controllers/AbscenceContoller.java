@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gesabsences.gesabsences.data.Entities.Abscence;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import com.gesabsences.gesabsences.Web.Dto.Request.AbscenceRequest;
 import com.gesabsences.gesabsences.config.Controller;
 
@@ -34,6 +38,14 @@ public interface AbscenceContoller extends Controller<Abscence> {
 
     @GetMapping("/update/{id}")
     ResponseEntity<Map<String, Object>> getJustificatifInAbscence(@PathVariable String id);
+
+     @GetMapping("/filter")
+        @ApiResponse(responseCode = "200")
+        ResponseEntity<Map<String, Object>> SelectAll(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "3") int size,
+                        @RequestParam(required = false) String StatutAbscence );
+
 
     
 

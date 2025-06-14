@@ -2,6 +2,7 @@ package com.gesabsences.gesabsences.data.Services.Impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.gesabsences.gesabsences.config.Impl.IService;
@@ -9,7 +10,7 @@ import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Repositories.AbscenceRepository;
 import com.gesabsences.gesabsences.data.Services.AbscenceService;
-
+import org.springframework.data.domain.Pageable;
 @Service
 public class IAbscenceService extends IService<Abscence, AbscenceRepository> implements AbscenceService {
 
@@ -48,6 +49,11 @@ public class IAbscenceService extends IService<Abscence, AbscenceRepository> imp
     @Override
     public List<Abscence> findByEleveId(String eleveId) {
         return absenceRepository.findByEleveId(eleveId);
+    }
+
+    @Override
+    public Page<Abscence> findByStatutAbscence(String statutAbscence, Pageable pageable) {
+        return absenceRepository.findByStatutAbscence(statutAbscence, pageable);
     }
 
 }
