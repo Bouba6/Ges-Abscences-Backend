@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
 
                         .requestMatchers("/api/v1/mobile/**").permitAll()
+                        .requestMatchers("/api/v1/cours/**").permitAll()
                         .requestMatchers("/api/v1/**").hasRole("VIGILE") // TEMPORAIRE POUR LES TESTS
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/vigile/**").hasRole("VIGILE")
