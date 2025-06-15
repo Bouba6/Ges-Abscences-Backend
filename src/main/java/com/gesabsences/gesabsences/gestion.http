@@ -174,3 +174,8 @@ GET http://localhost:8080/api/v1/mobile/eleves/user/683d74bb827bef35f1e72612
 
 
 GET http://localhost:8080/api/v1/mobile/vigiles/user/683d74ac827bef35f1e725eb
+
+
+###
+
+GET http://localhost:8080/api/v1/abscences/filter?page=0&size=6

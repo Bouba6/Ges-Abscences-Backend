@@ -21,7 +21,8 @@ public interface Controller<T> {
         @ApiResponse(responseCode = "200")
         ResponseEntity<Map<String, Object>> SelectAll(
                         @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "3") int size);
+                        @RequestParam(defaultValue = "3") int size
+                        );
 
         @GetMapping("/{id}")
         @ApiResponses(value = {

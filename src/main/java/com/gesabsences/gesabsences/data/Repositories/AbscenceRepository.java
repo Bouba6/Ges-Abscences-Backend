@@ -1,5 +1,12 @@
 package com.gesabsences.gesabsences.data.Repositories;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+
 import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 
@@ -20,5 +27,7 @@ public interface AbscenceRepository extends MongoRepository<Abscence, String> {
 
 
     List<Abscence> findByEleveId(String eleveId);
+
+    Page<Abscence> findByStatutAbscence(String statutAbscence, Pageable pageable);
 
 }

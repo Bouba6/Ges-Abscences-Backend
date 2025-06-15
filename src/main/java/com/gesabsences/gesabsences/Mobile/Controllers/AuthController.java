@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -32,7 +33,8 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody UserRequest authenticationRequest)
+    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody UserRequest authenticationRequest,
+            HttpServletResponse response)
             throws Exception {
 
         System.out.println("=== DEBUT LOGIN ===");
@@ -43,14 +45,19 @@ public class AuthController {
             // Debug: Check if user exists before authentication
             System.out.println("🔍 Tentative de chargement de l'utilisateur...");
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getLogin());
-            System.out.println("✅ UserDetails trouvé: " + userDetails.getUsername());
-            System.out.println("🔒 Password dans DB (encodé): " + userDetails.getPassword());
-            System.out.println("🔐 Password reçu (plain): " + authenticationRequest.getPassword());
-            System.out.println("🏛️ Authorities: " + userDetails.getAuthorities());
-            System.out.println("📊 Account non expired: " + userDetails.isAccountNonExpired());
-            System.out.println("🔓 Account non locked: " + userDetails.isAccountNonLocked());
-            System.out.println("🔑 Credentials non expired: " + userDetails.isCredentialsNonExpired());
-            System.out.println("✅ Enabled: " + userDetails.isEnabled());
+            // System.out.println("✅ UserDetails trouvé: " + userDetails.getUsername());
+            // System.out.println("🔒 Password dans DB (encodé): " +
+            // userDetails.getPassword());
+            // System.out.println("🔐 Password reçu (plain): " +
+            // authenticationRequest.getPassword());
+            // System.out.println("🏛️ Authorities: " + userDetails.getAuthorities());
+            // System.out.println("📊 Account non expired: " +
+            // userDetails.isAccountNonExpired());
+            // System.out.println("🔓 Account non locked: " +
+            // userDetails.isAccountNonLocked());
+            // System.out.println("🔑 Credentials non expired: " +
+            // userDetails.isCredentialsNonExpired());
+            // System.out.println("✅ Enabled: " + userDetails.isEnabled());
 
             // Now try authentication
             System.out.println("🚀 Tentative d'authentification...");
@@ -62,6 +69,16 @@ public class AuthController {
             final String token = jwtTokenUtil.generateToken(userDetails.getUsername(),
                     customUserDetails.getUser().getRole().name());
             System.out.println("✅ Token généré");
+
+            jakarta.servlet.http.Cookie jwtCookie = new jakarta.servlet.http.Cookie("jwt_token", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false); // true en production avec HTTPS
+            jwtCookie.setPath("/");
+            jwtCookie.setMaxAge(7 * 24 * 60 * 60); // 7 jours
+            // jwtCookie.setSameSite("Strict"); // Si tu veux l'ajouter
+
+            response.addCookie(jwtCookie);
+            System.out.println("✅ Cookie JWT créé");
 
             return ResponseEntity.ok(new JwtResponse(token,
                     customUserDetails.getUser().getRole().name(),
@@ -95,5 +112,19 @@ public class AuthController {
             System.out.println("❌ Identifiants invalides - vérifiez l'encodage du mot de passe");
             throw new Exception("INVALID_CREDENTIALS", e);
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // Supprimer le cookie
+        jakarta.servlet.http.Cookie jwtCookie = new jakarta.servlet.http.Cookie("jwt_token", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false); // true en production
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0); // Supprime immédiatement
+
+        response.addCookie(jwtCookie);
+
+        return ResponseEntity.ok().body("Déconnexion réussie");
     }
 }

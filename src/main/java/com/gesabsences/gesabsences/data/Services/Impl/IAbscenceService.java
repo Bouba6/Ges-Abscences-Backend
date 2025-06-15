@@ -1,19 +1,16 @@
 package com.gesabsences.gesabsences.data.Services.Impl;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import com.gesabsences.gesabsences.config.Impl.IService;
 import com.gesabsences.gesabsences.data.Entities.Abscence;
 import com.gesabsences.gesabsences.data.Entities.Cours;
 import com.gesabsences.gesabsences.data.Repositories.AbscenceRepository;
 import com.gesabsences.gesabsences.data.Services.AbscenceService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-
 @Service
 public class IAbscenceService implements AbscenceService {
 
@@ -61,6 +58,11 @@ public class IAbscenceService implements AbscenceService {
     @Override
     public List<Abscence> findByEleveId(String eleveId) {
         return absenceRepository.findByEleveId(eleveId);
+    }
+
+    @Override
+    public Page<Abscence> findByStatutAbscence(String statutAbscence, Pageable pageable) {
+        return absenceRepository.findByStatutAbscence(statutAbscence, pageable);
     }
 
 }

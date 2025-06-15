@@ -35,7 +35,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        // JWT Token is in the form "Bearer token". Remove Bearer word and get only the Token
+        // JWT Token is in the form "Bearer token". Remove Bearer word and get only the
+        // Token
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
             try {
@@ -46,7 +47,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 logger.warn("JWT Token has expired");
             }
         } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+            jwtToken = getJwtFromCookies(request);
+            if (jwtToken != null) {
+                try {
+                    username = jwtUtil.extractUsername(jwtToken);
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Unable to get JWT Token from cookie");
+                } catch (ExpiredJwtException e) {
+                    logger.warn("JWT Token from cookie has expired");
+                }
+            } else {
+                logger.warn("JWT Token not found in header or cookies");
+            }
         }
 
         // Once we get the token validate it.
@@ -62,10 +74,23 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 // After setting the Authentication in the context, we specify
-                // that the current user is authenticated. So it passes the Spring Security Configurations successfully.
+                // that the current user is authenticated. So it passes the Spring Security
+                // Configurations successfully.
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
         chain.doFilter(request, response);
+
+    }
+
+    private String getJwtFromCookies(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("jwt_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }
