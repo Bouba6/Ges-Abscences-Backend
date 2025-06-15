@@ -62,8 +62,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/v1").hasRole("VIGILE")
-                        .requestMatchers("/api/v1/mobile/**").permitAll() // TEMPORAIRE POUR LES TESTS
+
+                        .requestMatchers("/api/v1/mobile/**").permitAll()
+                        .requestMatchers("/api/v1/**").hasRole("VIGILE") // TEMPORAIRE POUR LES TESTS
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/vigile/**").hasRole("VIGILE")
                         .requestMatchers(
