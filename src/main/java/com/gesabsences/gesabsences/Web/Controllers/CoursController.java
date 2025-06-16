@@ -23,4 +23,8 @@ public interface CoursController extends Controller<Cours> {
         ResponseEntity<?> findByProfesseurId(@PathVariable String id,
                         @RequestParam String startDate,
                         @RequestParam String endDate);
+
+
+        @GetMapping("/eleve/{eleveId}/today")
+        ResponseEntity<?> getCoursForEleveToday(@PathVariable String eleveId);
 }

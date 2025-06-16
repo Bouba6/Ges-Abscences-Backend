@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.utils.Mapper;
+package com.gesabsences.gesabsences.Mobile.Dto.Mapper;
 
 import java.util.List;
 
@@ -9,13 +9,13 @@ import com.gesabsences.gesabsences.data.Entities.Classe;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
 import com.gesabsences.gesabsences.data.Entities.ProfesseurClasse;
 import com.gesabsences.gesabsences.data.Entities.ProfesseurModule;
-import com.gesabsences.gesabsences.Web.Dto.Response.ClasseResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.ModuleResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.ProfesseurResponse;
-import com.gesabsences.gesabsences.Web.Dto.Response.ProfesseurResponseClasse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ClasseResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ModuleResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ProfesseurResponse;
+import com.gesabsences.gesabsences.Mobile.Dto.Response.ProfesseurResponseClasse;
 
 @Mapper(componentModel = "spring")
-public interface ProfesseurMapper {
+public interface MobProfesseurMapper {
     @Mapping(target = "professeurModules", source = "professeurModules")
     ProfesseurResponse toDto(Professeur professeur);
 

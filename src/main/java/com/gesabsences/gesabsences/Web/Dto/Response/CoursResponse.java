@@ -2,6 +2,8 @@ package com.gesabsences.gesabsences.Web.Dto.Response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -15,7 +17,7 @@ public class CoursResponse {
     private String nomProfesseur;
     private String nomModule;
     private int nbHeures;
-    private LocalTime heureDebut;
-    private LocalTime heureFin;
+    private Date heureDebut;
+    private Date heureFin;
     private LocalDate date;
 }

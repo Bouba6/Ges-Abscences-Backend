@@ -10,17 +10,13 @@ public class AbsenceResponse {
     private String heureDebut;
     private boolean justifiee;
 
-    public AbsenceResponse(String nom, String classe, String date, String matiere, String type,
-                           String heureArrivee, String heureDebut, boolean justifiee) {
-        this.nom = nom;
-        this.classe = classe;
-        this.date = date;
-        this.matiere = matiere;
-        this.type = type;
-        this.heureArrivee = heureArrivee;
-        this.heureDebut = heureDebut;
-        this.justifiee = justifiee;
-    }
+    private String id;
+    private String idJustification;
+    private String statutJustificatif;
+    private String nomCours;
+    private String typeAbscence;
+    private String statutAbscence;
+    private String nomEleve;
 
     
     public String getNom() { return nom; }

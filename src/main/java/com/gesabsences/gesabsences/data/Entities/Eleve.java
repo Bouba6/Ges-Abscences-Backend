@@ -25,4 +25,7 @@ public class Eleve extends Personne {
     @DBRef
     private User user;
 
+    @DBRef
+    private List<Inscription> inscriptions;
+
 }

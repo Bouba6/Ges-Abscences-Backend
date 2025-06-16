@@ -16,7 +16,7 @@ import com.gesabsences.gesabsences.Web.Dto.Response.NiveauResponse;
 import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Niveau;
 import com.gesabsences.gesabsences.data.Services.NiveauService;
-import com.gesabsences.gesabsences.utils.Mapper.NiveauMapper;
+import com.gesabsences.gesabsences.Web.Mapper.NiveauMapper;
 
 import lombok.RequiredArgsConstructor;
 

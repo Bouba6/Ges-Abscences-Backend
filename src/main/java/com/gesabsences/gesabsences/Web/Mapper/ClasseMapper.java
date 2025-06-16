@@ -1,4 +1,4 @@
-package com.gesabsences.gesabsences.utils.Mapper;
+package com.gesabsences.gesabsences.Web.Mapper;
 
 import com.gesabsences.gesabsences.data.Entities.Classe;
 import com.gesabsences.gesabsences.Web.Dto.Response.ClasseDetailResponse;
@@ -6,8 +6,10 @@ import com.gesabsences.gesabsences.Web.Dto.Response.ClasseResponse;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.context.annotation.Primary;
 
 @Mapper(componentModel = "spring") // Utilsable avec Spring
+@Primary
 public interface ClasseMapper {
 
     @Mapping(target = "nomClasse", source = "nomClasse")
