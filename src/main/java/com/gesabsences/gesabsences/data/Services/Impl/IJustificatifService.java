@@ -10,6 +10,10 @@ import com.gesabsences.gesabsences.data.Entities.Justification;
 import com.gesabsences.gesabsences.data.Repositories.EleveRepository;
 import com.gesabsences.gesabsences.data.Repositories.JustificatifRepository;
 import com.gesabsences.gesabsences.data.Services.JustificatifService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 public class IJustificatifService extends IService<Justification, JustificatifRepository>

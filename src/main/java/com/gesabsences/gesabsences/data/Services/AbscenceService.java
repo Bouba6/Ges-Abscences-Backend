@@ -1,5 +1,6 @@
 package com.gesabsences.gesabsences.data.Services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
