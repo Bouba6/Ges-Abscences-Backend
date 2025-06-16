@@ -1,5 +1,7 @@
 package com.gesabsences.gesabsences.Web.Dto.Response;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.gesabsences.gesabsences.data.Entities.Abscence;
@@ -9,8 +11,10 @@ import lombok.Data;
 
 @Data
 public class justificatifResponse {
-    
 
+    private String id;
+    private String justificatif;
+    private String abscenceId;
     private String statutJustification;
 
     private String typeAbscence;
@@ -20,8 +24,6 @@ public class justificatifResponse {
     private String nomCours;
 
     private String statutAbscence;
-
+    private List<String> imgUrl;
 
 }
-
-

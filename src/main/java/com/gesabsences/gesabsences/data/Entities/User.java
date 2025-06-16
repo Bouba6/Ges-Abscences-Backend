@@ -1,6 +1,7 @@
 package com.gesabsences.gesabsences.data.Entities;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.gesabsences.gesabsences.data.Enum.Role;
 
@@ -12,10 +13,11 @@ import lombok.Setter;
 @Setter
 @Data
 
-// @Document(collection = "users")
+@Document(collection = "users")
 public class User extends Personne {
 
     private String password;
     private Role role;
-    private String Login;
+    @Field("Login")
+    private String login;
 }
