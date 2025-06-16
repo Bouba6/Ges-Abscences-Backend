@@ -1,11 +1,26 @@
 
 ##
-GET http://localhost:8080/api/v1/eleves
+GET http://localhost:8080/api/v1/mobile/eleves
 ###
 
 ###
 
 GET http://localhost:8080/api/v1/classes/professeur/68366198d5748c5c10e824cb
+
+###
+GET http://localhost:8080/api/v1/mobile/pointage/byVigileId/683bad275fe4a742e54c7f8d
+
+###
+
+POST http://localhost:8080/api/v1/mobile/pointage/valider-presence
+Accept: application/json
+Content-Type: application/json
+
+{
+        "eleveId": "683dafd5827bef35f1e72a19",
+        "heureArrivee": "2025-06-02T15:00:00.000Z",
+        "idVigile": "683dafc9827bef35f1e729ef"
+}
 
 ###
 
@@ -18,8 +33,29 @@ GET http://localhost:8080/api/v1/professeurs
 
 ###
 
+GET http://localhost:8080/api/v1/mobile/pointage/elevesjour
+
+###
+
+GET http://localhost:8080/api/v1/mobile/eleves/683b34d621cd3269b4056b4b
+
+###
+
 GET http://localhost:8080/api/v1/mobile/classes
 
+###
+
+GET http://localhost:8080/api/v1/cours/eleve/684b1bdf44a55b35db8e3100/today
+
+###
+GET http://localhost:8080/api/v1/mobile/justifier/eleve/6836e7b75bf44a56b8f5f78e
+
+###
+
+GET http://localhost:8080/api/v1/mobile/cours/Date/2025-05-30T07:00:00.000+00:00
+###
+
+GET http://localhost:8080/api/v1/mobile/cours
 ###
 
 GET http://localhost:8080/api/v1/mobile/classes/6836e7ae5bf44a56b8f5f75c
@@ -34,7 +70,16 @@ GET http://localhost:8080/api/v1/classes/professeur/6836285320fe0370c39e7f3c
 ###
 
 GET http://localhost:8080/api/v1/cours/classe/6836bead5479bc17875f516c?startDate=2025-03-26&endDate=2025-03-30 
+###
 
+POST http://localhost:8080/api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "login": "Admin0",
+    "password": "Admin0"
+}
 
 
 ###
@@ -48,6 +93,8 @@ GET http://localhost:8080/api/v1/eleves/1
 ###
 
 GET http://localhost:8080/api/v1/niveau
+# Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVklHSUxFIiwic3ViIjoiQWRtaW4wIiwiaWF0IjoxNzUwMDIwNTI3LCJleHAiOjE3NTAxMDY5Mjd9.BJerq_vM86niCiOzD0-G2d7YnuIhZ9eFFdWkigWpUFo
+
 
 ###
 
@@ -62,5 +109,83 @@ GET http://localhost:8080/api/v1/cours/classe/6836bead5479bc17875f516c?startDate
 GET http://localhost:8080/api/v1/cours/professeur/1?startDate=2025-03-26&endDate=2025-03-30 
 
 
+###
+
+
+POST http://localhost:8080/api/v1/mobile/justifier
+Accept: application/json
+Content-Type: application/json
+
+{
+        
+        "justificatif": "je suis dead",
+        "statutJustification": "EN_ATTENTE",
+        "abscenceId": "683daff2827bef35f1e72a40",
+        "imageUrl": ["https://i.pinimg.com/564x/00/9c/0b/009c0b8e2b4f9b4b4b4b4b4b4b4b4b4b.jpg",
+        "https://i.pinimg.com/564x/00/9c/0b/009c0b8e2b4f9b4b4b4b4b4b4b4b4b4b.jpg"
+        ]
+}
+
 
 ###
+
+GET http://localhost:8080/api/v1/mobile/abscences/eleve/683d74bd827bef35f1e7261a
+
+
+###
+
+PUT http://localhost:8080/api/v1/mobile/abscences/update/683997f114d219133e657141
+Accept: application/json
+Content-Type: application/json
+
+{
+        "statutAbscence": "JUSTIFIER",
+        "eleveId": "683997d214d219133e657125",
+        "justificatifId": "6836e80b5bf44a56b8f5f86d",
+        "coursId": "683997d814d219133e657138",
+        "typeAbscence": "Absent"        
+}
+
+
+###
+
+POST http://localhost:8080/api/v1/mobile/abscences
+
+     
+###
+Get http://localhost:8080/api/v1/abscences
+
+###
+
+Get http://localhost:8080/api/v1/abscences/update/683b653fcb355527cb77dac2
+
+###
+PUT http://localhost:8080/api/v1/justificatif/abscence/683b6549cb355527cb77dac5
+Accept: application/json
+Content-Type: application/json
+
+{
+        "statutJustificatif": "VALIDE"
+}
+###
+
+GET http://localhost:8080/api/v1/mobile/eleves/user/683d74bb827bef35f1e72612
+
+###
+
+
+
+GET http://localhost:8080/api/v1/mobile/vigiles/user/683d74ac827bef35f1e725eb
+
+
+###
+
+GET http://localhost:8080/api/v1/abscences/filter?page=0&size=6
+
+
+
+
+###
+
+GET https://ges-abscences-backend.onrender.com/api/v1/abscences/filter?page=0&size=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVklHSUxFIiwic3ViIjoiQWRtaW4wIiwiaWF0IjoxNzUwMDIzODk2LCJleHAiOjE3NTAxMTAyOTZ9.SPRrC60SQF0dsnbTNGoEWIsFQ_Ydmb9txJ-cg-PUjOU

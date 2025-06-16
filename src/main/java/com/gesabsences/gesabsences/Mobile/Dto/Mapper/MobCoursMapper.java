@@ -1,5 +1,7 @@
 package com.gesabsences.gesabsences.Mobile.Dto.Mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -15,4 +17,6 @@ public interface MobCoursMapper {
     @Mapping(target = "nomClasse", source = "cours.classe.nomClasse")
     @Mapping(target = "nomModule", source = "cours.module.nom")
     CoursResponse toDto(Cours cours);
+
+    List<CoursResponse> coursListToCoursDTO(List<Cours> cours);
 }

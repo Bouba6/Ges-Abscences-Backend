@@ -32,4 +32,7 @@ public interface AbscenceContoller extends Controller<Abscence> {
     @PutMapping("/update/{id}")
     ResponseEntity<Map<String, Object>> Update(@PathVariable String id, @RequestBody AbscenceRequest objet);
 
+    @GetMapping("/eleve/{id}")
+    ResponseEntity<Map<String, Object>> findAbsenceByEleve(@PathVariable String id);
+
 }

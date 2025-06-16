@@ -17,4 +17,9 @@ public interface CoursService extends Service<Cours> {
     List<Cours> findByProfesseurAndDateBetween(Professeur professeur, LocalDate startDate, LocalDate endDate);
 
     List<Cours> findCoursForEleve(Eleve eleve);
+
+    List<Cours> getCoursForEleveToday(Eleve eleve);
+
+
+    List<Cours> findByDate(Date date);
 }
