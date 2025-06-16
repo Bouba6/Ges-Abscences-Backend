@@ -25,8 +25,9 @@ import com.gesabsences.gesabsences.data.Services.ClasseService;
 import com.gesabsences.gesabsences.data.Services.EleveService;
 import com.gesabsences.gesabsences.data.Services.ProfesseurClasseService;
 import com.gesabsences.gesabsences.data.Services.ProfesseurService;
-import com.gesabsences.gesabsences.utils.Mapper.ClasseMapper;
-import com.gesabsences.gesabsences.utils.Mapper.EleveMapper;
+import com.gesabsences.gesabsences.Web.Mapper.ClasseMapper;
+import com.gesabsences.gesabsences.Web.Mapper.EleveMapper;
+
 
 import lombok.RequiredArgsConstructor;
 

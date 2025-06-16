@@ -17,7 +17,7 @@ import com.gesabsences.gesabsences.Web.Dto.Response.ProfesseurResponse;
 import com.gesabsences.gesabsences.Web.Dto.Response.RestResponse;
 import com.gesabsences.gesabsences.data.Entities.Professeur;
 import com.gesabsences.gesabsences.data.Services.ProfesseurService;
-import com.gesabsences.gesabsences.utils.Mapper.ProfesseurMapper;
+import com.gesabsences.gesabsences.Web.Mapper.ProfesseurMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,7 +53,7 @@ public class IProfesseurController implements ProfesseurController {
 
     @Override
     public ResponseEntity<Map<String, Object>> SelectdById(String id) {
-        
+
         return new ResponseEntity<>(RestResponse.response(HttpStatus.OK,
                 professeurMapper.toDto(professeurService.findById(id)), "Professeur"), HttpStatus.OK);
     }
