@@ -62,8 +62,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/api/v1/mobile/**").permitAll() // TEMPORAIRE POUR LES TESTS
+
+                        .requestMatchers("/api/v1/mobile/**").permitAll()
+                        .requestMatchers("/api/v1/cours/**").permitAll()
+                        .requestMatchers("/api/v1/**").hasRole("VIGILE") // TEMPORAIRE POUR LES TESTS
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/vigile/**").hasRole("VIGILE")
                         .requestMatchers(
@@ -89,7 +91,7 @@ public class SecurityConfig {
             corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:4200","https://gesabsences-front.onrender.com"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "https://gesabsences-front.onrender.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // utile si tu veux envoyer des cookies ou Authorization

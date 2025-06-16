@@ -45,19 +45,6 @@ public class AuthController {
             // Debug: Check if user exists before authentication
             System.out.println("🔍 Tentative de chargement de l'utilisateur...");
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getLogin());
-            // System.out.println("✅ UserDetails trouvé: " + userDetails.getUsername());
-            // System.out.println("🔒 Password dans DB (encodé): " +
-            // userDetails.getPassword());
-            // System.out.println("🔐 Password reçu (plain): " +
-            // authenticationRequest.getPassword());
-            // System.out.println("🏛️ Authorities: " + userDetails.getAuthorities());
-            // System.out.println("📊 Account non expired: " +
-            // userDetails.isAccountNonExpired());
-            // System.out.println("🔓 Account non locked: " +
-            // userDetails.isAccountNonLocked());
-            // System.out.println("🔑 Credentials non expired: " +
-            // userDetails.isCredentialsNonExpired());
-            // System.out.println("✅ Enabled: " + userDetails.isEnabled());
 
             // Now try authentication
             System.out.println("🚀 Tentative d'authentification...");
