@@ -69,7 +69,7 @@ public class ClasseMock implements CommandLineRunner {
         System.out.println("=== DÉBUT DE LA GÉNÉRATION DES DONNÉES OPTIMISÉES ===");
         // clearDatabase();
         // Vérifier si des données existent déjà
-        if (absenceRepository.count() > 0) {
+        if (coursRepository.count() > 0) {
             System.out.println("⚠️ Données déjà existantes, génération annulée");
             return;
         }
@@ -150,7 +150,7 @@ public class ClasseMock implements CommandLineRunner {
 
         // Phase 7: Créer MOINS d'absences
         if (!coursCrees.isEmpty()) {
-            generateOptimizedAbsences(coursCrees);
+            // generateOptimizedAbsences(coursCrees);
             System.out.println("✅ Phase 7 terminée: Absences générées");
         }
     }
@@ -391,12 +391,14 @@ public class ClasseMock implements CommandLineRunner {
 
         // Créneaux horaires réduits
         List<LocalTime> timeSlots = Arrays.asList(
+                LocalTime.of(5, 0),
+                LocalTime.of(7, 0),
                 LocalTime.of(8, 0),
                 LocalTime.of(10, 0),
                 LocalTime.of(14, 0));
 
         // SEULEMENT 3 JOURS : Lundi, Mardi, Mercredi
-        LocalDate startDate = LocalDate.now().with(DayOfWeek.THURSDAY);
+        LocalDate startDate = LocalDate.now().with(DayOfWeek.MONDAY);
         List<LocalDate> joursOuvrables = Arrays.asList(
                 startDate, // Lundi
                 startDate.plusDays(1), // Mardi
@@ -414,7 +416,10 @@ public class ClasseMock implements CommandLineRunner {
                         CombinaisonCours combinaison = trouverCombinaisonPourClasse(classe, professeurs, modules);
 
                         if (combinaison != null) {
-                            Cours cours = creerCoursOptimise(combinaison, jour, timeSlots.get(coursIndex), random);
+                            LocalTime horaire = timeSlots.get(random.nextInt(timeSlots.size()));
+                            // Cours cours = creerCoursOptimise(combinaison, jour,
+                            // timeSlots.get(coursIndex), random);
+                            Cours cours = creerCoursOptimise(combinaison, jour, horaire, random);
                             if (cours != null) {
                                 coursList.add(cours);
                             }
@@ -463,7 +468,7 @@ public class ClasseMock implements CommandLineRunner {
             cours.setModule(combinaison.module);
             cours.setClasse(combinaison.classe);
 
-            ZoneId zoneId = ZoneId.systemDefault();
+            ZoneId zoneId = ZoneId.of("Africa/Dakar"); // Au lieu de ZoneId.systemDefault()
             Date convertedDate = Date.from(jour.atStartOfDay(zoneId).toInstant());
             cours.setDate(convertedDate);
 
@@ -495,74 +500,80 @@ public class ClasseMock implements CommandLineRunner {
         }
     }
 
-    private void generateOptimizedAbsences(List<Cours> coursList) {
-        System.out.println("📋 Génération des absences (OPTIMISÉ - Version Simple)...");
-        Random random = new Random();
+    // private void generateOptimizedAbsences(List<Cours> coursList) {
+    // System.out.println("📋 Génération des absences (OPTIMISÉ - Version
+    // Simple)...");
+    // Random random = new Random();
 
-        int totalAbsencesGenerees = 0;
-        int totalJustificatifs = 0;
+    // int totalAbsencesGenerees = 0;
+    // int totalJustificatifs = 0;
 
-        for (Cours cours : coursList) {
-            try {
-                if (cours.getClasse() == null) {
-                    continue;
-                }
+    // for (Cours cours : coursList) {
+    // try {
+    // if (cours.getClasse() == null) {
+    // continue;
+    // }
 
-                List<Eleve> eleves = eleveRepository.findByClasse(cours.getClasse());
+    // List<Eleve> eleves = eleveRepository.findByClasse(cours.getClasse());
 
-                if (eleves.isEmpty()) {
-                    continue;
-                }
+    // if (eleves.isEmpty()) {
+    // continue;
+    // }
 
-                for (Eleve eleve : eleves) {
-                    try {
-                        // 5% de chance d'être absent
-                        if (random.nextDouble() < 0.1) {
-                            // 1. Créer et sauvegarder l'absence
-                            Abscence absence = new Abscence();
-                            absence.setEleve(eleve);
-                            absence.setCours(cours);
-                            absence.setTypeAbscence(random.nextBoolean() ? TypeAbscence.Absent : TypeAbscence.Retard);
+    // for (Eleve eleve : eleves) {
+    // try {
+    // // 5% de chance d'être absent
+    // if (random.nextDouble() < 0.1) {
+    // // 1. Créer et sauvegarder l'absence
+    // Abscence absence = new Abscence();
+    // absence.setEleve(eleve);
+    // absence.setCours(cours);
+    // absence.setTypeAbscence(random.nextBoolean() ? TypeAbscence.Absent :
+    // TypeAbscence.Retard);
 
-                            // 20% de chance d'être justifié
-                            boolean estJustifie = random.nextDouble() < 0.50;
-                            absence.setStatutAbscence(
-                                    estJustifie ? StatutAbscence.JUSTIFIER : StatutAbscence.NON_JUSTIFIER);
+    // // 20% de chance d'être justifié
+    // boolean estJustifie = random.nextDouble() < 0.50;
+    // absence.setStatutAbscence(
+    // estJustifie ? StatutAbscence.JUSTIFIER : StatutAbscence.NON_JUSTIFIER);
 
-                            // Sauvegarder l'absence d'abord
-                            Abscence savedAbsence = absenceRepository.save(absence);
-                            totalAbsencesGenerees++;
+    // // Sauvegarder l'absence d'abord
+    // Abscence savedAbsence = absenceRepository.save(absence);
+    // totalAbsencesGenerees++;
 
-                            // 2. Si justifié, créer et sauvegarder le justificatif
-                            if (estJustifie) {
-                                Justification justificatif = new Justification();
-                                justificatif.setAbscence(savedAbsence); // Utiliser l'absence sauvegardée avec ID
-                                // justificatif.setStatutJustification(getRandomStatutJustification(random));
-                                justificatif.setJustificatif(getRandomJustificatif(random));
-                                justificatif.setStatutJustification(StatutJustification.EN_ATTENTE);
-                                Justification savedJustificatif = justificatifRepository.save(justificatif);
-                                totalJustificatifs++;
+    // // 2. Si justifié, créer et sauvegarder le justificatif
+    // if (estJustifie) {
+    // Justification justificatif = new Justification();
+    // justificatif.setAbscence(savedAbsence); // Utiliser l'absence sauvegardée
+    // avec ID
+    // // justificatif.setStatutJustification(getRandomStatutJustification(random));
+    // justificatif.setJustificatif(getRandomJustificatif(random));
+    // justificatif.setStatutJustification(StatutJustification.EN_ATTENTE);
+    // Justification savedJustificatif = justificatifRepository.save(justificatif);
+    // totalJustificatifs++;
 
-                                // 3. Optionnel : mettre à jour la référence dans l'absence
-                                savedAbsence.setJustificatif(savedJustificatif);
-                                absenceRepository.save(savedAbsence);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.err.println("     ❌ Erreur génération absence: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-                }
-            } catch (Exception e) {
-                System.err.println("   ❌ Erreur génération absences pour cours: " + e.getMessage());
-            }
-        }
+    // // 3. Optionnel : mettre à jour la référence dans l'absence
+    // savedAbsence.setJustificatif(savedJustificatif);
+    // absenceRepository.save(savedAbsence);
+    // }
+    // }
+    // } catch (Exception e) {
+    // System.err.println(" ❌ Erreur génération absence: " + e.getMessage());
+    // e.printStackTrace();
+    // }
+    // }
+    // } catch (Exception e) {
+    // System.err.println(" ❌ Erreur génération absences pour cours: " +
+    // e.getMessage());
+    // }
+    // }
 
-        System.out.println("   ✅ " + totalAbsencesGenerees + " absences sauvegardées");
-        System.out.println("   ✅ " + totalJustificatifs + " justificatifs sauvegardés");
-        System.out.println("   📊 Résumé: " + totalAbsencesGenerees + " absences générées (" + totalJustificatifs
-                + " justifiées)");
-    }
+    // System.out.println(" ✅ " + totalAbsencesGenerees + " absences sauvegardées");
+    // System.out.println(" ✅ " + totalJustificatifs + " justificatifs
+    // sauvegardés");
+    // System.out.println(" 📊 Résumé: " + totalAbsencesGenerees + " absences
+    // générées (" + totalJustificatifs
+    // + " justifiées)");
+    // }
 
     private StatutJustification getRandomStatutJustification(Random random) {
         StatutJustification[] statuts = StatutJustification.values();
